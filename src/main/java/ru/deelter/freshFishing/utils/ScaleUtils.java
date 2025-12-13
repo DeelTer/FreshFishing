@@ -1,4 +1,4 @@
-package ru.deelter.vr.freshFishing.utils;
+package ru.deelter.freshFishing.utils;
 
 
 import org.bukkit.attribute.Attributable;

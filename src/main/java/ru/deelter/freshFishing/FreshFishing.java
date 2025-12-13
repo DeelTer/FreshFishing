@@ -1,10 +1,10 @@
-package ru.deelter.vr.freshFishing;
+package ru.deelter.freshFishing;
 
 import lombok.Getter;
 import org.bukkit.plugin.java.JavaPlugin;
-import ru.deelter.vr.freshFishing.listeners.EntityFishListener;
-import ru.deelter.vr.freshFishing.listeners.PlayerRestrictsListener;
-import ru.deelter.vr.freshFishing.listeners.UniqueFishParamsListener;
+import ru.deelter.freshFishing.listeners.EntityFishListener;
+import ru.deelter.freshFishing.listeners.PlayerRestrictsListener;
+import ru.deelter.freshFishing.listeners.UniqueFishParamsListener;
 
 public final class FreshFishing extends JavaPlugin {
 

@@ -1,0 +1,117 @@
+################################################
+#                                              #
+#             FRESH_FISHING                    #
+#              by DeelTer                      #
+#                                              #
+################################################
+
+# Introduction: `Blocks` represent the chance of obtaining a given item, modeled like a basic probability task.
+# Imagine putting N red balls and N blue balls into a single bag; N equals the number of blocks.
+# This analogy explains how odds are regulated: each block contributes equally to the total pool,
+# so increasing or decreasing the number of blocks changes the relative chance of each outcome.
+
+# Make empty list or empty string warning to disable option ( fish-only-in-biomes: [] )
+# Edit warning with https://webui.advntr.dev/
+fish-only-in-biomes:
+  warning: "<color:#EC5954>Only in oceans and rivers!</color>"
+  list:
+    - "RIVER"
+    - "FROZEN_RIVER"
+    - "OCEAN"
+    - "FROZEN_OCEAN"
+    - "WARM_OCEAN"
+    - "DEEP_OCEAN"
+    - "DEEP_LUKEWARM_OCEAN"
+    - "DEEP_FROZEN_OCEAN"
+    - "DEEP_COLD_OCEAN"
+    - "COLD_OCEAN"
+    - "LUKEWARM_OCEAN"
+
+# Set `0` to disable. Takes away N hunger points from player when fishing.
+# By default player have 20 points of hunger.
+hunger:
+  min-level-for-fishing: 3
+  fish: 1
+  item: 0
+
+# Placeholder <size> and <rarity>. Component helper: https://webui.advntr.dev/
+item-lore:
+  - ""
+  - "<color:#CBFF61>Size:</color> <color:#EBF5D8><size>cm</color>"
+  - "<color:#CBFF61>Rarity:</color> <rarity>"
+
+# Name component editor: https://webui.advntr.dev/
+rarities:
+  default:
+    name: "<color:#D5D5D5>Default</color>"
+    blocks: 100
+    multiplier: 1
+  rare:
+    name: "<color:#EC5954>Rare</color>"
+    blocks: 25
+    multiplier: 1.2
+  unique:
+    name: "<color:#FA81CA>Unique</color>"
+    blocks: 12
+    multiplier: 1.3
+  legendary:
+    name: "<color:#FFD700>Legendary</color>"
+    blocks: 2
+    multiplier: 1.4
+  mystery:
+    name: "<color:#8B79FF>Mystic</color>"
+    blocks: 1
+    multiplier: 1.5
+
+# Lambda — How much will Size try to be close to the minimum
+sizes:
+  tier1:
+    min: 6.0
+    max: 16.0
+    blocks: 120
+    lambda: 4
+  tier2:
+    min: 16.1
+    max: 36.0
+    blocks: 40
+    lambda: 4
+  tier3:
+    min: 36.1
+    max: 54.0
+    blocks: 22
+    lambda: 4
+  tier4:
+    min: 54.1
+    max: 140.0
+    blocks: 12
+    lambda: 4
+  tier5:
+    min: 140.1
+    max: 600.0
+    blocks: 20
+    lambda: 20
+
+# Random entities from fishing.
+# All Entity types: https://jd.papermc.io/paper/1.21.11/org/bukkit/entity/EntityType.html
+entities:
+  COD: 65
+  SALMON: 60
+  TROPICAL_FISH: 55
+  PUFFERFISH: 15
+  SQUID: 8
+  TURTLE: 8
+  DROWNED: 6
+  SKELETON: 5
+  CREEPER: 1
+  GUARDIAN: 3
+  ELDER_GUARDIAN: 1
+
+# Determines which vector a fish or other entity will fly towards you with.
+# I advise you not to change the parameter if you don't know what to do.
+vector-caught-object:
+  multiply: 1.4
+  x: 0
+  y: 0.4
+  z: 0
+
+

@@ -1,4 +1,4 @@
-package ru.deelter.vr.freshFishing.listeners;
+package ru.deelter.freshFishing.listeners;
 
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -10,9 +10,9 @@ import org.bukkit.event.entity.CreatureSpawnEvent;
 import org.bukkit.event.player.PlayerFishEvent;
 import org.bukkit.util.Vector;
 import org.jetbrains.annotations.NotNull;
-import ru.deelter.vr.freshFishing.FreshFishing;
-import ru.deelter.vr.freshFishing.utils.FishUtil;
-import ru.deelter.vr.freshFishing.utils.ProbabilityCollection;
+import ru.deelter.freshFishing.FreshFishing;
+import ru.deelter.freshFishing.utils.FishUtil;
+import ru.deelter.freshFishing.utils.ProbabilityCollection;
 
 import java.util.Objects;
 

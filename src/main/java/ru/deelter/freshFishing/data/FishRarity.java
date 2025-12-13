@@ -1,4 +1,4 @@
-package ru.deelter.vr.freshFishing.data;
+package ru.deelter.freshFishing.data;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -19,6 +19,7 @@ public class FishRarity {
 	private final String id;
 	private final Component name;
 	private final int blocks;
+	private final double multiplier;
 
 	public static FishRarity getById(@Nullable String stringId) {
 		if (stringId == null) return null;

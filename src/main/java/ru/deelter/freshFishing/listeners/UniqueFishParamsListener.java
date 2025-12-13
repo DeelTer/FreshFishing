@@ -1,9 +1,9 @@
-package ru.deelter.vr.freshFishing.listeners;
+package ru.deelter.freshFishing.listeners;
 
 import com.destroystokyo.paper.MaterialTags;
 import io.papermc.paper.entity.Bucketable;
-import it.unimi.dsi.fastutil.Pair;
 import net.kyori.adventure.text.minimessage.MiniMessage;
+import org.apache.commons.lang3.tuple.Pair;
 import org.bukkit.Bukkit;
 import org.bukkit.block.Block;
 import org.bukkit.configuration.ConfigurationSection;
@@ -22,11 +22,11 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import ru.deelter.vr.freshFishing.FreshFishing;
-import ru.deelter.vr.freshFishing.data.FishRarity;
-import ru.deelter.vr.freshFishing.data.FishSize;
-import ru.deelter.vr.freshFishing.utils.FishUtil;
-import ru.deelter.vr.freshFishing.utils.ProbabilityCollection;
+import ru.deelter.freshFishing.FreshFishing;
+import ru.deelter.freshFishing.data.FishRarity;
+import ru.deelter.freshFishing.data.FishSize;
+import ru.deelter.freshFishing.utils.FishUtil;
+import ru.deelter.freshFishing.utils.ProbabilityCollection;
 
 import java.util.Objects;
 
@@ -58,11 +58,15 @@ public class UniqueFishParamsListener implements Listener {
 			FishRarity fishRarity = FishRarity.builder()
 					.id(rarityId)
 					.name(MiniMessage.miniMessage().deserialize(Objects.requireNonNull(raritySection.getString("name"))))
+					.multiplier(raritySection.getDouble("multiplier"))
 					.blocks(raritySection.getInt("blocks"))
 					.build();
 			rarities.add(fishRarity, fishRarity.getBlocks());
 			FishRarity.RARITIES.add(fishRarity);
 		});
+
+		FishUtil.ITEM_LORE.addAll(config.getStringList("item-lore"));
+		plugin.getLogger().info(String.format("Registered %s rarities and %s sizes", rarities.size(), sizes.size()));
 
 		plugin.getServer().getPluginManager().registerEvents(this, plugin);
 	}
@@ -72,11 +76,8 @@ public class UniqueFishParamsListener implements Listener {
 	public void onFishSpawn(@NotNull CreatureSpawnEvent event) {
 		if (!(event.getEntity() instanceof Fish fish)) return;
 
-		double originalSize = FishUtil.getSize(fish);
-		FishRarity originalRarity = FishUtil.getRarity(fish);
-
-		double size = originalSize > 0 ? originalSize : FishUtil.getRandomSize();
-		FishRarity rarity = originalSize > 0 ? originalRarity : FishUtil.getRandomType();
+		double size = sizes.get().getRandomRoundedSize();
+		FishRarity rarity = rarities.get();
 
 		FishUtil.editFish(fish, size, rarity);
 	}
@@ -87,10 +88,8 @@ public class UniqueFishParamsListener implements Listener {
 
 		double size = FishUtil.getSize(fish);
 		FishRarity rarity = FishUtil.getRarity(fish);
-
-		if (fish.getEntitySpawnReason() != CreatureSpawnEvent.SpawnReason.CUSTOM && size > 8.0) {
-			event.getDrops().clear();
-			return;
+		if (rarity == null) {
+			rarity = rarities.get();
 		}
 		for (ItemStack drop : event.getDrops()) {
 			if (!FishUtil.isFish(drop)) continue;
@@ -106,8 +105,8 @@ public class UniqueFishParamsListener implements Listener {
 		if (!FishUtil.isFish(itemStack)) return;
 		if (FishUtil.hasSize(itemStack)) return;
 
-		double size = FishUtil.getRandomSize();
-		FishRarity rarity = FishUtil.getRandomType();
+		double size = sizes.get().getRandomRoundedSize();
+		FishRarity rarity = rarities.get();
 
 		ItemStack fishItem = FishUtil.editFishItem(itemStack, rarity, size);
 		item.setItemStack(fishItem);
@@ -119,6 +118,9 @@ public class UniqueFishParamsListener implements Listener {
 
 		var size = FishUtil.getSize(fish);
 		var rarity = FishUtil.getRarity(fish);
+		if (rarity == null) {
+			rarity = rarities.get();
+		}
 
 		FishUtil.editFishItem(event.getEntityBucket(), rarity, size);
 	}
@@ -141,7 +143,7 @@ public class UniqueFishParamsListener implements Listener {
 					.orElse(null);
 			if (fish == null) return;
 
-			FishUtil.editFish(fish, params.right(), params.left());
+			FishUtil.editFish(fish, params.getRight(), params.getLeft());
 		}, 1);
 
 	}

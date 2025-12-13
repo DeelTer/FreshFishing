@@ -1,4 +1,4 @@
-package ru.deelter.vr.freshFishing.data;
+package ru.deelter.freshFishing.data;
 
 
 import lombok.AllArgsConstructor;

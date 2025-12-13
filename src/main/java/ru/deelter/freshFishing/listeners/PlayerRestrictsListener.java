@@ -1,10 +1,7 @@
-package ru.deelter.vr.freshFishing.listeners;
+package ru.deelter.freshFishing.listeners;
 
-import io.papermc.paper.registry.RegistryAccess;
-import io.papermc.paper.registry.RegistryKey;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.MiniMessage;
-import org.bukkit.NamespacedKey;
 import org.bukkit.Sound;
 import org.bukkit.block.Biome;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -16,11 +13,10 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerFishEvent;
 import org.jetbrains.annotations.NotNull;
-import ru.deelter.vr.freshFishing.FreshFishing;
-import ru.deelter.vr.freshFishing.utils.FishUtil;
+import ru.deelter.freshFishing.FreshFishing;
+import ru.deelter.freshFishing.utils.FishUtil;
 
 import java.util.HashSet;
-import java.util.Objects;
 import java.util.Set;
 
 public class PlayerRestrictsListener implements Listener {
@@ -43,10 +39,8 @@ public class PlayerRestrictsListener implements Listener {
 		} else {
 			onlyBiomesWarning = null;
 		}
-		config.getStringList("fish-only-in-biomes.biomes").forEach(biomeString -> {
-			Biome biome = RegistryAccess.registryAccess()
-					.getRegistry(RegistryKey.BIOME)
-					.get(Objects.requireNonNull(NamespacedKey.fromString(biomeString)));
+		config.getStringList("fish-only-in-biomes.list").forEach(biomeString -> {
+			Biome biome = Biome.valueOf(biomeString.toUpperCase());
 			onlyBiomes.add(biome);
 		});
 

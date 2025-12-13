@@ -1,6 +1,6 @@
 name: FreshFishing
 version: '1.0'
-main: ru.deelter.vr.freshFishing.FreshFishing
+main: ru.deelter.freshFishing.FreshFishing
 api-version: '1.21'
 authors: [ DeelTer ]
 website: https://t.me/deelter
