@@ -8,26 +8,29 @@ import ru.deelter.freshFishing.listeners.UniqueFishParamsListener;
 
 public final class FreshFishing extends JavaPlugin {
 
-	@Getter
-	private static FreshFishing instance;
+    @Getter
+    private static FreshFishing instance;
 
-	@Override
-	public void onLoad() {
-		instance = this;
-	}
+    @Override
+    public void onLoad() {
+        instance = this;
+    }
 
-	@Override
-	public void onEnable() {
-		saveDefaultConfig();
+    @Override
+    public void onEnable() {
+        saveDefaultConfig();
 
-		new UniqueFishParamsListener(this);
-		new PlayerRestrictsListener(this);
-		new EntityFishListener(this);
+        new MetricsManager(this, 31328);
 
-	}
+        new UniqueFishParamsListener(this);
+        new PlayerRestrictsListener(this);
+        new EntityFishListener(this);
 
-	@Override
-	public void onDisable() {
-		// Plugin shutdown logic
-	}
+        getLogger().info("FreshFishing enabled with bStats metrics (ID: 31328)");
+    }
+
+    @Override
+    public void onDisable() {
+        getLogger().info("FreshFishing disabled");
+    }
 }
