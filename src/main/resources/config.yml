@@ -5,13 +5,15 @@
 #                                              #
 ################################################
 
-# Introduction: `Blocks` represent the chance of obtaining a given item, modeled like a basic probability task.
-# Imagine putting N red balls and N blue balls into a single bag; N equals the number of blocks.
-# This analogy explains how odds are regulated: each block contributes equally to the total pool,
-# so increasing or decreasing the number of blocks changes the relative chance of each outcome.
+# --- PROBABILITY MECHANICS ---
+# `blocks` represent the relative chance (weight) of an outcome.
+# Total probability pool = sum of all blocks.
+# Higher blocks = higher chance.
 
-# Make empty list or empty string warning to disable option ( fish-only-in-biomes: [] )
-# Edit warning with https://webui.advntr.dev/
+# --- BIOME RESTRICTIONS ---
+# Players can only fish in allowed biomes.
+# If list is empty → no restriction.
+# Leave warning empty to disable the action bar message.
 fish-only-in-biomes:
   warning: "<color:#EC5954>Only in oceans and rivers!</color>"
   list:
@@ -27,25 +29,29 @@ fish-only-in-biomes:
     - "COLD_OCEAN"
     - "LUKEWARM_OCEAN"
 
-# Set `0` to disable. Takes away N hunger points from player when fishing.
-# By default player have 20 points of hunger.
+# --- HUNGER SYSTEM ---
+# Consumes hunger points when fishing.
+# Set to 0 to disable.
 hunger:
-  min-level-for-fishing: 3
-  fish: 1
-  item: 0
+  min-level-for-fishing: 3   # Minimum hunger level required to fish
+  fish: 1                    # Hunger cost when catching a fish
+  item: 0                    # Hunger cost when catching other items (e.g. junk)
 
-# Placeholder <size> and <rarity>. Component helper: https://webui.advntr.dev/
+# --- ITEM LORE FOR FISH ---
+# Placeholders: <size> (fish size in cm), <rarity> (colored name)
+# Use MiniMessage format: https://webui.advntr.dev/
 item-lore:
   - ""
   - "<color:#CBFF61>Size:</color> <color:#EBF5D8><size>cm</color>"
   - "<color:#CBFF61>Rarity:</color> <rarity>"
 
-# Name component editor: https://webui.advntr.dev/
+# --- FISH RARITIES ---
+# Each rarity has a display name (MiniMessage), weight (blocks), and size multiplier.
 rarities:
   default:
     name: "<color:#D5D5D5>Default</color>"
     blocks: 100
-    multiplier: 1
+    multiplier: 1.0
   rare:
     name: "<color:#EC5954>Rare</color>"
     blocks: 25
@@ -63,7 +69,9 @@ rarities:
     blocks: 1
     multiplier: 1.5
 
-# Lambda — How much will Size try to be close to the minimum
+# --- FISH SIZE TIERS ---
+# Each tier defines a size range (in cm), weight (blocks), and lambda.
+# Lambda controls exponential distribution: higher lambda = sizes closer to min.
 sizes:
   tier1:
     min: 6.0
@@ -91,8 +99,10 @@ sizes:
     blocks: 20
     lambda: 20
 
-# Random entities from fishing.
-# All Entity types: https://jd.papermc.io/paper/1.21.11/org/bukkit/entity/EntityType.html
+# --- RANDOM ENTITIES FROM FISHING ---
+# Instead of a fish, you may catch other entities.
+# Keys are EntityType names (https://jd.papermc.io/paper/1.21.11/org/bukkit/entity/EntityType.html)
+# Values are weight (blocks).
 entities:
   COD: 65
   SALMON: 60
@@ -106,12 +116,11 @@ entities:
   GUARDIAN: 3
   ELDER_GUARDIAN: 1
 
-# Determines which vector a fish or other entity will fly towards you with.
-# I advise you not to change the parameter if you don't know what to do.
+# --- VECTOR FOR THROWN ENTITIES ---
+# Controls how caught entities fly toward the player.
+# Default values are balanced; change only if you understand.
 vector-caught-object:
   multiply: 1.4
   x: 0
   y: 0.4
   z: 0
-
-
