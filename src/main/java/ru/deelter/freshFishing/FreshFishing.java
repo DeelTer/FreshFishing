@@ -38,7 +38,10 @@ public final class FreshFishing extends JavaPlugin {
 		new SandLootManager(this);
 
 		getCommand("fish").setExecutor(new FishCommand());
-		getCommand("sandmarker").setExecutor(new SandMarkerCommand());
+
+		SandMarkerCommand sandMarkerCommand = new SandMarkerCommand();
+		getCommand("sandmarker").setExecutor(sandMarkerCommand);
+		getCommand("sandmarker").setTabCompleter(sandMarkerCommand);
 	}
 
 	@Override

@@ -92,11 +92,10 @@ public class SandLootManager {
         }, intervalTicks, intervalTicks).getTaskId();
     }
 
-	private List<Block> findNearbyBlocks(Block center) {
+	private @NonNull List<Block> findNearbyBlocks(Block center) {
 		List<Block> result = new ArrayList<>();
 		Random random = new Random();
 
-		// Только два слоя: текущий (Y) и под ним (Y-1)
 		for (int yOffset = 0; yOffset >= -1; yOffset--) {
 			Block yLevel = center.getRelative(0, yOffset, 0);
 
