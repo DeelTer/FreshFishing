@@ -4,6 +4,8 @@ import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.event.ClickEvent;
 import net.kyori.adventure.text.event.HoverEvent;
 import net.kyori.adventure.text.format.NamedTextColor;
+import org.bukkit.Location;
+import org.bukkit.block.Block;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -35,8 +37,12 @@ public class SandMarkerCommand implements CommandExecutor {
 
         switch (args[0].toLowerCase()) {
             case "create":
-                manager.addMarker(player.getLocation());
-                player.sendMessage(Component.text("Marker created at your location.", NamedTextColor.GREEN));
+                Block standingBlock = player.getLocation().getBlock();
+                Location markerLoc = standingBlock.getLocation().add(0.5, 0, 0.5);
+                manager.addMarker(markerLoc);
+                player.sendMessage(Component.text("Marker created at "
+                                + standingBlock.getX() + ", " + standingBlock.getY() + ", " + standingBlock.getZ(),
+                        NamedTextColor.GREEN));
                 break;
             case "remove":
                 boolean removed = manager.removeMarker(player.getLocation());
