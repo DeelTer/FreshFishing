@@ -1,52 +1,35 @@
-################################################
-#                                              #
-#             FRESH_FISHING                    #
-#              by DeelTer                      #
-#                                              #
-################################################
+# Minimum food level required to fish (0-20)
+# Player cannot fish if food level is below this value
+min-level-for-fishing: 3
+# Hunger points consumed when catching a FISH entity
+# Set to 0 to disable hunger cost for fish
+fish: 1
+# Hunger points consumed when catching non-fish items (junk, treasure)
+# Set to 0 to disable hunger cost for items
+item: 0
 
-# --- PROBABILITY MECHANICS ---
-# `blocks` represent the relative chance (weight) of an outcome.
-# Total probability pool = sum of all blocks.
-# Higher blocks = higher chance.
-
-# --- BIOME RESTRICTIONS ---
-# Players can only fish in allowed biomes.
-# If list is empty → no restriction.
-# Leave warning empty to disable the action bar message.
-fish-only-in-biomes:
-  warning: "<color:#EC5954>Only in oceans and rivers!</color>"
-  list:
-    - "RIVER"
-    - "FROZEN_RIVER"
-    - "OCEAN"
-    - "FROZEN_OCEAN"
-    - "WARM_OCEAN"
-    - "DEEP_OCEAN"
-    - "DEEP_LUKEWARM_OCEAN"
-    - "DEEP_FROZEN_OCEAN"
-    - "DEEP_COLD_OCEAN"
-    - "COLD_OCEAN"
-    - "LUKEWARM_OCEAN"
-
-# --- HUNGER SYSTEM ---
-# Consumes hunger points when fishing.
-# Set to 0 to disable.
-hunger:
-  min-level-for-fishing: 3   # Minimum hunger level required to fish
-  fish: 1                    # Hunger cost when catching a fish
-  item: 0                    # Hunger cost when catching other items (e.g. junk)
-
-# --- ITEM LORE FOR FISH ---
-# Placeholders: <size> (fish size in cm), <rarity> (colored name)
-# Use MiniMessage format: https://webui.advntr.dev/
+# ==============================================
+# ITEM LORE FOR FISH
+# ==============================================
+# Custom lore lines added to fish items when caught.
+# Placeholders:
+#   <size>  - Fish size in centimeters (e.g., "25.5")
+#   <rarity> - Colored rarity name from rarities section
+# Supports MiniMessage format: https://webui.advntr.dev/
+# Leave list empty to disable lore entirely.
 item-lore:
   - ""
   - "<color:#CBFF61>Size:</color> <color:#EBF5D8><size>cm</color>"
   - "<color:#CBFF61>Rarity:</color> <rarity>"
 
-# --- FISH RARITIES ---
-# Each rarity has a display name (MiniMessage), weight (blocks), and size multiplier.
+# ==============================================
+# FISH RARITIES
+# ==============================================
+# Each rarity defines how rare and valuable a fish is.
+# Properties:
+#   name       - Display name (MiniMessage format, supports colors & gradients)
+#   blocks     - Weight for probability selection (higher = more common)
+#   multiplier - Price and scale multiplier (higher = more expensive/larger)
 rarities:
   default:
     name: "<color:#D5D5D5>Default</color>"
@@ -69,9 +52,17 @@ rarities:
     blocks: 1
     multiplier: 1.5
 
-# --- FISH SIZE TIERS ---
-# Each tier defines a size range (in cm), weight (blocks), and lambda.
-# Lambda controls exponential distribution: higher lambda = sizes closer to min.
+# ==============================================
+# FISH SIZE TIERS
+# ==============================================
+# Each tier defines a size range and distribution for fish.
+# Properties:
+#   min    - Minimum size in centimeters (inclusive)
+#   max    - Maximum size in centimeters (inclusive)
+#   blocks - Weight for probability selection (higher = more common)
+#   lambda - Exponential distribution parameter
+#            Higher lambda = sizes cluster near the minimum
+#            Lower lambda = more uniform distribution across the range
 sizes:
   tier1:
     min: 6.0
@@ -99,10 +90,13 @@ sizes:
     blocks: 20
     lambda: 20
 
-# --- RANDOM ENTITIES FROM FISHING ---
-# Instead of a fish, you may catch other entities.
-# Keys are EntityType names (https://jd.papermc.io/paper/1.21.11/org/bukkit/entity/EntityType.html)
-# Values are weight (blocks).
+# ==============================================
+# RANDOM ENTITIES FROM FISHING
+# ==============================================
+# Instead of catching a fish, players may catch other entities.
+# Keys are EntityType names (case-insensitive)
+# Values are weight (blocks) for probability selection.
+# Full entity list: https://jd.papermc.io/paper/1.21.11/org/bukkit/entity/EntityType.html
 entities:
   COD: 65
   SALMON: 60
@@ -116,11 +110,231 @@ entities:
   GUARDIAN: 3
   ELDER_GUARDIAN: 1
 
-# --- VECTOR FOR THROWN ENTITIES ---
+# ==============================================
+# VECTOR FOR THROWN ENTITIES
+# ==============================================
 # Controls how caught entities fly toward the player.
-# Default values are balanced; change only if you understand.
+# Properties:
+#   multiply - Overall velocity multiplier (higher = faster flight)
+#   x, y, z  - Additional velocity components added after normalization
+# Default values are balanced; change only if you understand physics.
 vector-caught-object:
   multiply: 1.4
   x: 0
   y: 0.4
   z: 0
+
+# ==============================================
+# SALE SHOP
+# ==============================================
+# GUI menu where players can sell fish and other caught items.
+sale-shop:
+  # Enable or disable the sale shop feature
+  enabled: true
+  # GUI title (supports MiniMessage format)
+  title: "Fish Market"
+  # GUI size in slots (must be multiple of 9, min 9, max 54)
+  size: 27
+  # Slot position for the "Sell" button (0-based index)
+  sale-button-slot: 22
+  # Price ranges for fish by rarity
+  # If a rarity is not listed, uses default values
+  # Price = min-price + (max-price - min-price) * (size / max-possible-size)
+  # Then multiplied by rarity's multiplier
+  fish-sale-ranges:
+    default:
+      min-price: 8
+      max-price: 450
+    rare:
+      min-price: 20
+      max-price: 600
+    # Add more rarities as needed:
+    # unique:
+    #   min-price: 50
+    #   max-price: 1200
+    # legendary:
+    #   min-price: 150
+    #   max-price: 3000
+    # mystery:
+    #   min-price: 500
+    #   max-price: 10000
+  # Custom prices for non-fish items (junk, treasure)
+  # If an item type is not listed, uses default price of 0.15
+  trash-prices:
+    NAUTILUS_SHELL: 5.0
+    DEAD_BUSH: 0.5
+    STICK: 0.3
+    GLASS_BOTTLE: 1.0
+    BUCKET: 10.0
+    SEAGRASS: 1.0
+    SEA_PICKLE: 1.0
+    HEART_OF_THE_SEA: 30.0
+    SUSPICIOUS_STEW: 10.0
+    BONE_MEAL: 0.1
+    PRISMARINE_SHARD: 8.0
+    TRIAL_KEY: 5.0
+    OMINOUS_TRIAL_KEY: 10.0
+    CLOCK: 10.0
+    COMPASS: 10.0
+    INK_SAC: 0.5
+    TRIDENT: 20.0
+    LILY_PAD: 2.0
+    BOW: 6.0
+    CROSSBOW: 20.0
+    BOWL: 2.0
+    LEATHER: 2.0
+    NAME_TAG: 4.0
+    SADDLE: 5.0
+    BONE: 0.3
+    STRING: 0.3
+    ENDER_PEARL: 10.0
+    GUNPOWDER: 1.0
+    ROTTEN_FLESH: 0.3
+    HONEYCOMB: 1.0
+    SLIME_BALL: 0.5
+    FISHING_ROD: 20.0
+    BRUSH: 15.0
+    # Add more materials as needed
+  # Price per enchantment level for enchanted items
+  # If an enchantment is not listed, uses default price of 10.0
+  enchantment-prices:
+    MENDING: 40.0
+    LURE: 15.0
+    LUCK_OF_THE_SEA: 15.0
+    AQUA_AFFINITY: 14.0
+    LOOTING: 16.0
+    UNBREAKING: 20.0
+    INFINITY: 30.0
+    FROST_WALKER: 25.0
+    FIRE_ASPECT: 18.0
+    FLAME: 18.0
+    SMITE: 5.0
+    KNOCKBACK: 8.0
+    RIPTIDE: 14.0
+    # Add more enchantments as needed
+
+# ==============================================
+# BAIT SYSTEM
+# ==============================================
+# Players need specific items in their inventory to fish.
+bait:
+  # List of required bait items (case-insensitive material names)
+  # Supports simple materials (SPIDER_EYE) or complex ItemStack strings
+  # If list is empty, bait system is disabled entirely
+  required-items:
+    - SPIDER_EYE
+    - BREAD
+    # Complex ItemStack example (from /paper dumpitem):
+    # - "minecraft:gold_nugget[custom_model_data=100]"
+  # Whether to consume ONE bait item from inventory when fish is caught
+  # If false, bait is required but not consumed
+  consume-on-catch: true
+  # Action bar message shown when player tries to fish without required bait
+  # Supports MiniMessage format. Set to "" to disable the message.
+  no-bait-action-bar: "<red>You need bait to fish!"
+
+# ==============================================
+# GRAPPLING HOOK
+# ==============================================
+# Fishing rod acts as a grappling hook, pulling player or entities.
+grappling-hook:
+  # Enable or disable the grappling hook feature
+  enabled: true
+  # How strongly the player is pulled toward the hook location (when hook hits ground)
+  pull-strength: 1.0
+  # How strongly an entity is pulled toward the player (when hook catches entity)
+  pull-entity-strength: 1.0
+  # Sound effect when hook lands or catches something
+  # List of sound names: https://jd.papermc.io/paper/1.21/org/bukkit/Sound.html
+  hook-sound: "ENTITY_WIND_CHARGE_WIND_BURST"
+  # Sound effect when player or entity is pulled
+  player-pull-sound: "ENTITY_WIND_CHARGE_WIND_BURST"
+  # Particle effect to display at pull location
+  # Options: "SOUND_WITH_CHARGE_SHOT", "SWEEP_ATTACK", "NONE"
+  particle-effect: "SOUND_WITH_CHARGE_SHOT"
+  # Y-offset threshold for entity pulling logic
+  # If hooked entity is more than this many blocks above player's eye level,
+  # player is pulled toward entity instead of entity toward player
+  y-offset-check: 3.0
+
+  use-physics: true
+  upward-boost: 0.3
+  pull-delay-ticks: 1
+  drag-horizontal: 0.07
+  drag-vertical: 0.03
+  velocity-multiplier: 1.0
+
+# ==============================================
+# SAND LOOT (Suspicious Sand/Gravel)
+# ==============================================
+# Automatically spawns loot in suspicious sand/gravel blocks around markers.
+sand-loot:
+  # Loot generation mode:
+  #   "simple"  - Use simple material names (e.g., STICK, DIAMOND)
+  #   "complex" - Use ItemStack strings (from /paper dumpitem command)
+  enabled: true
+  mode: "simple"
+  # List of loot items to spawn in suspicious blocks
+  # In simple mode: just material names
+  # In complex mode: ItemStack strings (can include custom data, names, etc.)
+  # Simple mode examples:
+  # - STICK
+  # - DIAMOND
+  # - EMERALD
+  # Complex mode examples (from /paper dumpitem):
+  loot-tables:
+    - STICK
+    - BONE
+    - STRING
+    - ROTTEN_FLESH
+    - LEATHER
+    - FEATHER
+    - BOWL
+    - GLASS_BOTTLE
+    - TRIPWIRE_HOOK
+    - LEAD
+    - FISHING_ROD
+    - SADDLE
+    - NAME_TAG
+    - WATER_BOTTLE
+    - POTION
+    - INK_SAC
+    - BONE_MEAL
+    - GUNPOWDER
+    - SLIME_BALL
+    - LILY_PAD
+    - SEAGRASS
+    - SEA_PICKLE
+    - GOLD_NUGGET
+  # How often (in ticks) each marker attempts to spawn loot in nearby blocks
+  # 20 ticks = 1 second. 6000 ticks = 5 minutes.
+  #
+  # Note: Markers are created by administrators using /sandmarker command.
+  # Each marker defines an area where suspicious blocks can be populated.
+  # The plugin automatically finds sand/gravel blocks around the marker
+  # and converts them to suspicious sand/gravel with random loot.
+  spawn-interval-ticks: 6000
+
+# ==============================================
+# ADVANCED: PERFORMANCE & DEBUG
+# ==============================================
+# These settings are for advanced users and developers.
+performance:
+  # Enable debug logging (prints detailed information to console)
+  # WARNING: May cause performance issues and log spam on large servers
+  debug: false
+  # Maximum number of blocks to check per marker per spawn cycle
+  # Higher values = more thorough but more CPU intensive
+  max-blocks-per-marker: 48
+  # Cache duration for parsed ItemStacks (in seconds)
+  # Reduces parsing overhead for complex item strings
+  item-cache-duration: 300
+
+# ==============================================
+# METRICS (bstats.org)
+# ==============================================
+# Anonymous statistics help improve the plugin.
+# No personal data is collected. You can disable if desired.
+metrics:
+  # Enable or disable bStats metrics
+  enabled: true

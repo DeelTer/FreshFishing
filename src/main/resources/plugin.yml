@@ -1,6 +1,20 @@
 name: FreshFishing
-version: '1.0'
+version: '2.0'
 main: ru.deelter.freshFishing.FreshFishing
 api-version: '1.21'
 authors: [ DeelTer ]
 website: https://t.me/deelter
+
+commands:
+  fish:
+    description: Open fish sale menu
+    usage: /fish menu [player]
+  sandmarker:
+    description: Manage sand loot markers
+    usage: /sandmarker <create|list|remove>
+    permission: freshfishing.admin
+
+permissions:
+  freshfishing.admin:
+    description: Allows managing sand loot markers
+    default: op
