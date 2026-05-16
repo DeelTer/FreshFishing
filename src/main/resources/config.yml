@@ -137,6 +137,7 @@ sale-shop:
   size: 27
   # Slot position for the "Sell" button (0-based index)
   sale-button-slot: 22
+  sale-sound: "custom.coins.drop.multiply"
   # Price ranges for fish by rarity
   # If a rarity is not listed, uses default values
   # Price = min-price + (max-price - min-price) * (size / max-possible-size)
@@ -314,6 +315,9 @@ sand-loot:
   # The plugin automatically finds sand/gravel blocks around the marker
   # and converts them to suspicious sand/gravel with random loot.
   spawn-interval-ticks: 6000
+  items-per-spawn: 3
+  min-items-per-spawn: 1
+  max-items-per-spawn: 5
 
 # ==============================================
 # ADVANCED: PERFORMANCE & DEBUG
@@ -325,7 +329,7 @@ performance:
   debug: false
   # Maximum number of blocks to check per marker per spawn cycle
   # Higher values = more thorough but more CPU intensive
-  max-blocks-per-marker: 48
+  max-blocks-per-marker: 16
   # Cache duration for parsed ItemStacks (in seconds)
   # Reduces parsing overhead for complex item strings
   item-cache-duration: 300

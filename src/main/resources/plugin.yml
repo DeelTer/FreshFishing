@@ -4,6 +4,9 @@ main: ru.deelter.freshFishing.FreshFishing
 api-version: '1.21'
 authors: [ DeelTer ]
 website: https://t.me/deelter
+softdepend:
+  - Vault
+  - VaultUnlocked
 
 commands:
   fish:
