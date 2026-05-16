@@ -64,12 +64,10 @@ public class FishSaleListener implements Listener {
 			if (event.getClick() == ClickType.SHIFT_LEFT || event.getClick() == ClickType.SHIFT_RIGHT) {
 				ItemStack current = event.getCurrentItem();
 				if (current != null && !current.isEmpty()) {
-					ItemStack toMove = current.clone();
-					toMove.setAmount(1);
 					int firstEmpty = getFirstEmptySlot(inv, 0, 18);
 					if (firstEmpty != -1) {
-						current.setAmount(current.getAmount() - 1);
-						inv.setItem(firstEmpty, toMove);
+						inv.setItem(firstEmpty, current.clone());
+						current.setAmount(0);
 						event.setCancelled(true);
 						updateTotalAndButton(inv, menu);
 					}
