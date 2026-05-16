@@ -25,6 +25,9 @@ public class FishCommand implements CommandExecutor {
 			}
 		}
 		if (args.length == 2 && args[0].equalsIgnoreCase("menu")) {
+			if (!sender.hasPermission("freshfishing.sell-menu")) {
+				return true;
+			}
 			Player target = Bukkit.getPlayer(args[1]);
 			if (target == null) {
 				sender.sendMessage(Component.text("Player not found: " + args[1], NamedTextColor.RED));
