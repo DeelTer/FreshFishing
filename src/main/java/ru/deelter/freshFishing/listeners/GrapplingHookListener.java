@@ -52,18 +52,20 @@ public class GrapplingHookListener implements Listener {
 		if (enabled) plugin.getServer().getPluginManager().registerEvents(this, plugin);
 	}
 
-	@EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
+	@EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
 	public void onFishGround(PlayerFishEvent event) {
 		if (!enabled) return;
-		if (event.getState() != PlayerFishEvent.State.IN_GROUND) return;
+
 		FishHook hook = event.getHook();
 		if (hook.getHookedEntity() != null) return;
+		if (!hook.isOnGround()) return;
+
 		Player player = event.getPlayer();
 		pullEntity(player, hook.getLocation(), pullStrength);
 		playEffects(player.getLocation(), hook.getLocation());
 	}
 
-	@EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
+	@EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
 	public void onFishEntity(PlayerFishEvent event) {
 		if (!enabled) return;
 		if (event.getState() != PlayerFishEvent.State.CAUGHT_ENTITY) return;
