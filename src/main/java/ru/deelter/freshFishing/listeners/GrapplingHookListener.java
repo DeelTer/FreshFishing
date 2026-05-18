@@ -58,11 +58,19 @@ public class GrapplingHookListener implements Listener {
 
 		FishHook hook = event.getHook();
 		if (hook.getHookedEntity() != null) return;
-		if (!hook.isOnGround()) return;
+		if (!isHookOnGround(hook)) return;
 
 		Player player = event.getPlayer();
 		pullEntity(player, hook.getLocation(), pullStrength);
 		playEffects(player.getLocation(), hook.getLocation());
+	}
+
+	private boolean isHookOnGround(@NonNull FishHook hook) {
+		if (hook.isOnGround()) return true;
+
+		Location loc = hook.getLocation().clone();
+		loc.subtract(0, 0.1, 0);
+		return loc.getBlock().getType().isSolid();
 	}
 
 	@EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
