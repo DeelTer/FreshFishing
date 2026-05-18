@@ -273,7 +273,7 @@ sand-loot:
   # Loot generation mode:
   #   "simple"  - Use simple material names (e.g., STICK, DIAMOND)
   #   "complex" - Use ItemStack strings (from /paper dumpitem command)
-  enabled: true
+  enabled: false
   mode: "simple"
   # List of loot items to spawn in suspicious blocks
   # In simple mode: just material names
