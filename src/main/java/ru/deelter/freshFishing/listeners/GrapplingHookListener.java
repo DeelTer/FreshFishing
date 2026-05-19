@@ -3,18 +3,24 @@ package ru.deelter.freshFishing.listeners;
 import org.bukkit.Location;
 import org.bukkit.Particle;
 import org.bukkit.Sound;
+import org.bukkit.block.BlockFace;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.FishHook;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
+import org.bukkit.event.entity.ProjectileHitEvent;
 import org.bukkit.event.player.PlayerFishEvent;
 import org.bukkit.util.Vector;
 import org.jspecify.annotations.NonNull;
 import ru.deelter.freshFishing.FreshFishing;
 import ru.deelter.freshFishing.config.FreshFishingConfig;
 import ru.deelter.freshFishing.utils.PhysicsUtils;
+
+import java.util.HashSet;
+import java.util.Set;
+import java.util.UUID;
 
 public class GrapplingHookListener implements Listener {
 
@@ -33,6 +39,9 @@ public class GrapplingHookListener implements Listener {
 	private final double dragVertical;
 	private final double velocityMultiplier;
 
+	private final boolean wallGrappleEnabled;
+	private final Set<UUID> wallGrappledHooks = new HashSet<>();
+
 	public GrapplingHookListener(FreshFishing plugin) {
 		FreshFishingConfig config = plugin.getConfigManager();
 		this.enabled = config.isGrapplingHookEnabled();
@@ -48,8 +57,22 @@ public class GrapplingHookListener implements Listener {
 		this.dragHorizontal = config.getGrapplingHookDragHorizontal();
 		this.dragVertical = config.getGrapplingHookDragVertical();
 		this.velocityMultiplier = config.getGrapplingHookVelocityMultiplier();
+		this.wallGrappleEnabled = config.isGrapplingHookWallGrapple();
 
 		if (enabled) plugin.getServer().getPluginManager().registerEvents(this, plugin);
+	}
+
+	@EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
+	public void onProjectileHit(ProjectileHitEvent event) {
+		if (!enabled || !wallGrappleEnabled) return;
+		if (!(event.getEntity() instanceof FishHook hook)) return;
+		if (event.getHitBlock() == null) return;
+
+		BlockFace face = event.getHitBlockFace();
+		if (face == null || face == BlockFace.UP) return;
+
+		hook.setGravity(false);
+		wallGrappledHooks.add(hook.getUniqueId());
 	}
 
 	@EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
@@ -60,12 +83,14 @@ public class GrapplingHookListener implements Listener {
 		if (hook.getHookedEntity() != null) return;
 		if (!isHookOnGround(hook)) return;
 
+		wallGrappledHooks.remove(hook.getUniqueId());
 		Player player = event.getPlayer();
 		pullEntity(player, hook.getLocation(), pullStrength);
 		playEffects(player.getLocation(), hook.getLocation());
 	}
 
 	private boolean isHookOnGround(@NonNull FishHook hook) {
+		if (wallGrappledHooks.contains(hook.getUniqueId())) return true;
 		if (hook.isOnGround()) return true;
 
 		Location loc = hook.getLocation().clone();

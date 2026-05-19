@@ -58,6 +58,7 @@ public class FreshFishingConfig {
     private String noBaitActionBar;
 
     private boolean grapplingHookEnabled;
+    private boolean grapplingHookWallGrapple;
     private boolean grapplingHookUsePhysics;
     private double grapplingHookUpwardBoost;
     private int grapplingHookPullDelayTicks;
@@ -220,6 +221,7 @@ public class FreshFishingConfig {
 
         // === GRAPPLING HOOK ===
         grapplingHookEnabled = config.getBoolean("grappling-hook.enabled", true);
+        grapplingHookWallGrapple = config.getBoolean("grappling-hook.wall-grapple", true);
         grapplingHookUsePhysics = config.getBoolean("grappling-hook.use-physics", true);
         grapplingHookUpwardBoost = config.getDouble("grappling-hook.upward-boost", 0.3);
         grapplingHookPullDelayTicks = config.getInt("grappling-hook.pull-delay-ticks", 1);
