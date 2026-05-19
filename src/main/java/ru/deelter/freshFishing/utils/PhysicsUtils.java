@@ -31,6 +31,12 @@ public class PhysicsUtils {
 		Bukkit.getScheduler().runTaskLater(FreshFishing.getInstance(), () -> {
 			double g = -0.08;
 			double d = target.distance(entityLoc);
+
+			if (d < 0.1) {
+				entity.setVelocity(new Vector(0, 0, 0));
+				return;
+			}
+
 			double t = d;
 
 			double v_x = (1.0 + dragHorizontal * t) * (target.getX() - entityLoc.getX()) / t;
