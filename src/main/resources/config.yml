@@ -241,9 +241,10 @@ bait:
 grappling-hook:
   # Enable or disable the grappling hook feature
   enabled: true
-  # Allow hook to stick to walls and ceilings (gravity disabled on non-floor hit)
-  # Player can then reel in to pull themselves to the wall
+  # Allow hook to grapple walls (checks adjacent solid blocks when reeling in)
   wall-grapple: true
+  # Cooldown in ticks after grappling (-1 to disable)
+  cooldown-ticks: 40
   # How strongly the player is pulled toward the hook location (when hook hits ground)
   pull-strength: 1.0
   # How strongly an entity is pulled toward the player (when hook catches entity)

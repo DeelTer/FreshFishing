@@ -1,6 +1,7 @@
 package ru.deelter.freshFishing.listeners;
 
 import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.Particle;
 import org.bukkit.Sound;
 import org.bukkit.block.BlockFace;
@@ -10,17 +11,12 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
-import org.bukkit.event.entity.ProjectileHitEvent;
 import org.bukkit.event.player.PlayerFishEvent;
 import org.bukkit.util.Vector;
 import org.jspecify.annotations.NonNull;
 import ru.deelter.freshFishing.FreshFishing;
 import ru.deelter.freshFishing.config.FreshFishingConfig;
 import ru.deelter.freshFishing.utils.PhysicsUtils;
-
-import java.util.HashSet;
-import java.util.Set;
-import java.util.UUID;
 
 public class GrapplingHookListener implements Listener {
 
@@ -40,7 +36,7 @@ public class GrapplingHookListener implements Listener {
 	private final double velocityMultiplier;
 
 	private final boolean wallGrappleEnabled;
-	private final Set<UUID> wallGrappledHooks = new HashSet<>();
+	private final int grapplingCooldownTicks;
 
 	public GrapplingHookListener(FreshFishing plugin) {
 		FreshFishingConfig config = plugin.getConfigManager();
@@ -58,44 +54,43 @@ public class GrapplingHookListener implements Listener {
 		this.dragVertical = config.getGrapplingHookDragVertical();
 		this.velocityMultiplier = config.getGrapplingHookVelocityMultiplier();
 		this.wallGrappleEnabled = config.isGrapplingHookWallGrapple();
+		this.grapplingCooldownTicks = config.getGrapplingCooldownTicks();
 
 		if (enabled) plugin.getServer().getPluginManager().registerEvents(this, plugin);
 	}
 
 	@EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
-	public void onProjectileHit(ProjectileHitEvent event) {
-		if (!enabled || !wallGrappleEnabled) return;
-		if (!(event.getEntity() instanceof FishHook hook)) return;
-		if (event.getHitBlock() == null) return;
-
-		BlockFace face = event.getHitBlockFace();
-		if (face == null || face == BlockFace.UP) return;
-
-		hook.setGravity(false);
-		wallGrappledHooks.add(hook.getUniqueId());
-	}
-
-	@EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
 	public void onFishGround(PlayerFishEvent event) {
 		if (!enabled) return;
+		if (event.getState() == PlayerFishEvent.State.FISHING) return;
 
 		FishHook hook = event.getHook();
 		if (hook.getHookedEntity() != null) return;
 		if (!isHookOnGround(hook)) return;
 
-		wallGrappledHooks.remove(hook.getUniqueId());
 		Player player = event.getPlayer();
 		pullEntity(player, hook.getLocation(), pullStrength);
 		playEffects(player.getLocation(), hook.getLocation());
+		applyCooldown(player);
 	}
 
 	private boolean isHookOnGround(@NonNull FishHook hook) {
-		if (wallGrappledHooks.contains(hook.getUniqueId())) return true;
 		if (hook.isOnGround()) return true;
 
 		Location loc = hook.getLocation().clone();
-		loc.subtract(0, 0.1, 0);
-		return loc.getBlock().getType().isSolid();
+		if (loc.subtract(0, 0.1, 0).getBlock().getType().isSolid()) return true;
+
+		if (wallGrappleEnabled) {
+			for (BlockFace face : new BlockFace[]{BlockFace.NORTH, BlockFace.SOUTH, BlockFace.EAST, BlockFace.WEST}) {
+				if (hook.getLocation().getBlock().getRelative(face).getType().isSolid()) return true;
+			}
+		}
+		return false;
+	}
+
+	private void applyCooldown(@NonNull Player player) {
+		if (grapplingCooldownTicks <= 0) return;
+		player.setCooldown(Material.FISHING_ROD, grapplingCooldownTicks);
 	}
 
 	@EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
