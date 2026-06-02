@@ -192,7 +192,7 @@ public class FreshFishingConfig {
         if (trashSec != null) {
             for (String matName : trashSec.getKeys(false)) {
                 try {
-                    Material material = Material.valueOf(matName);
+                    Material material = Material.valueOf(matName.toUpperCase());
                     trashPrices.put(material, trashSec.getDouble(matName));
                 } catch (IllegalArgumentException ignored) {
                 }
