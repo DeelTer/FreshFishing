@@ -29,15 +29,15 @@ public class FishCommand implements CommandExecutor {
 			}
 			target = player;
 		} else {
-			if (!sender.hasPermission("freshfishing.sell-menu")) {
-				sender.sendMessage(Component.text("You don't have permission to open menu for others.", NamedTextColor.RED));
-				return true;
-			}
 			target = Bukkit.getPlayer(args[1]);
 			if (target == null) {
 				sender.sendMessage(Component.text("Player not found: " + args[1], NamedTextColor.RED));
 				return true;
 			}
+		}
+		if (!sender.hasPermission("freshfishing.sell-menu")) {
+			sender.sendMessage(Component.text("You don't have permission to open menu.", NamedTextColor.RED));
+			return true;
 		}
 
 		target.openInventory(new FishSaleMenu().getInventory());
