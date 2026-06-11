@@ -1,5 +1,6 @@
 package ru.deelter.freshFishing.listeners;
 
+import io.papermc.paper.datacomponent.DataComponentTypes;
 import net.kyori.adventure.text.Component;
 import net.milkbowl.vault2.economy.Economy;
 import org.apache.commons.lang3.tuple.Pair;
@@ -13,6 +14,7 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.RegisteredServiceProvider;
 import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 import ru.deelter.freshFishing.FreshFishing;
 import ru.deelter.freshFishing.config.FreshFishingConfig;
 import ru.deelter.freshFishing.data.FishRarity;
@@ -86,6 +88,12 @@ public class FishSaleListener implements Listener {
 
 			Economy economy = setupEconomy();
 			if (economy != null) {
+				FreshFishing.getInstance().getLogger().info(String.format("Player %s sell and receive %s coins. Content: %s",
+						player.getName(),
+						total,
+						formatItemsString(inv)
+						));
+
 				economy.deposit(FreshFishing.getInstance().getName(), player.getUniqueId(), BigDecimal.valueOf(total));
 				if (config.getSaleSound() != null) {
 					player.playSound(player.getLocation(), config.getSaleSound(), 1f, 1f);
@@ -111,6 +119,17 @@ public class FishSaleListener implements Listener {
 		}
 
 		event.setCancelled(true);
+	}
+
+	private @NonNull String formatItemsString(Inventory inv) {
+		StringBuilder s = new StringBuilder();
+		for (int i = 0; i < 18; i++) {
+			ItemStack item = inv.getItem(i);
+			if (item == null || item.isEmpty()) continue;
+
+			s.append(item.getType()).append(", ");
+		}
+		return s.toString();
 	}
 
 	private int getFirstEmptySlot(Inventory inv, int start, int end) {
@@ -192,8 +211,11 @@ public class FishSaleListener implements Listener {
 
 	private double getItemPrice(ItemStack item) {
 		if (FishUtil.isFish(item)) {
+			if (item.getData(DataComponentTypes.DAMAGE) > 0) return 0;
+
 			Pair<FishRarity, Double> attrs = FishUtil.getAttributes(item);
 			if (attrs == null) return 0;
+
 			FishRarity rarity = attrs.getLeft();
 			double size = attrs.getRight();
 			double maxSize = FishSize.SIZES.stream().mapToDouble(FishSize::getMax).max().orElse(600);
@@ -225,7 +247,7 @@ public class FishSaleListener implements Listener {
 		return bonus;
 	}
 
-	private Economy setupEconomy() {
+	private @Nullable Economy setupEconomy() {
 		RegisteredServiceProvider<Economy> rsp = FreshFishing.getInstance().getServer().getServicesManager().getRegistration(Economy.class);
 		if (rsp == null) {
 			FreshFishing.getInstance().getLogger().warning("VaultUnlocked economy not found! Money will not be given.");

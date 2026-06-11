@@ -8,6 +8,9 @@ fish: 1
 # Set to 0 to disable hunger cost for items
 item: 0
 
+# Fish durability
+fish-consume-damage: 25
+
 # ==============================================
 # ITEM LORE FOR FISH
 # ==============================================

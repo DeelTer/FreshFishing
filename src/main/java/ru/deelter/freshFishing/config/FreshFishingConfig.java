@@ -33,6 +33,7 @@ public class FreshFishingConfig {
     private int minHungerLevel;
     private int hungerFishCost;
     private int hungerItemCost;
+    private int fishConsumeDamage;
 
     private List<String> itemLore = new ArrayList<>();
 
@@ -106,11 +107,12 @@ public class FreshFishingConfig {
         minHungerLevel = config.getInt("min-level-for-fishing", 3);
         hungerFishCost = config.getInt("fish", 1);
         hungerItemCost = config.getInt("item", 0);
+        fishConsumeDamage = config.getInt("fish-consume-damage", 20);
 
         // === ITEM LORE ===
         itemLore = config.getStringList("item-lore");
-        FishUtil.ITEM_LORE.clear();
-        FishUtil.ITEM_LORE.addAll(itemLore);
+        FishUtil.CONFIG_ITEM_LORE.clear();
+        FishUtil.CONFIG_ITEM_LORE.addAll(itemLore);
 
         // === RARITIES ===
         rarityCollection.clear();

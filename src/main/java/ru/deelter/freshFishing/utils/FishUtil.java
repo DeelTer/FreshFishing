@@ -1,5 +1,9 @@
 package ru.deelter.freshFishing.utils;
 
+import com.destroystokyo.paper.MaterialTags;
+import io.papermc.paper.datacomponent.DataComponentTypes;
+import io.papermc.paper.datacomponent.item.ItemLore;
+import io.papermc.paper.persistence.PersistentDataContainerView;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.TextDecoration;
 import net.kyori.adventure.text.minimessage.MiniMessage;
@@ -9,10 +13,8 @@ import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.entity.*;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.persistence.PersistentDataContainer;
 import org.bukkit.persistence.PersistentDataType;
-import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import ru.deelter.freshFishing.FreshFishing;
@@ -24,7 +26,7 @@ import java.util.List;
 
 public class FishUtil {
 
-	public static final List<String> ITEM_LORE = new ArrayList<>();
+	public static final List<String> CONFIG_ITEM_LORE = new ArrayList<>();
 	private static final String TAG_SIZE = "size";
 	private static final String TAG_RARITY = "rarity";
 	private static final double MIN_SCALE = 0.5;
@@ -55,7 +57,7 @@ public class FishUtil {
 	}
 
 	public static boolean isFish(@NotNull Material material) {
-		return getFishByMaterial(material) != null;
+		return MaterialTags.RAW_FISH.isTagged(material) || MaterialTags.COOKED_FISH.isTagged(material);
 	}
 
 	public static boolean isFish(@NotNull ItemStack item) {
@@ -63,56 +65,56 @@ public class FishUtil {
 	}
 
 	public static boolean hasSize(@NotNull ItemStack item) {
-		ItemMeta meta = item.getItemMeta();
-		if (meta == null) {
-			return false;
-		}
-		PersistentDataContainer nbt = meta.getPersistentDataContainer();
-		return nbt.has(KEY_SIZE, PersistentDataType.DOUBLE);
+		return item.getPersistentDataContainer().has(KEY_SIZE, PersistentDataType.DOUBLE);
 	}
 
 	public static double getSize(@NotNull ItemStack item) {
-		ItemMeta meta = item.getItemMeta();
-		if (meta == null) {
-			return 0.0;
-		}
-		PersistentDataContainer nbt = meta.getPersistentDataContainer();
-		Double size = nbt.get(KEY_SIZE, PersistentDataType.DOUBLE);
+		Double size = item.getPersistentDataContainer().get(KEY_SIZE, PersistentDataType.DOUBLE);
 		return size == null ? 0.0 : size;
 	}
 
-	@Contract("_, _, _ -> param1")
+	public static int recalculateMaxDamage(@NotNull ItemStack item) {
+		double size = getSize(item);
+		if (size <= 0.0) return 0;
+
+		int maxDamage = Math.max(1, (int) (size / FreshFishing.getInstance().getConfigManager().getFishConsumeDamage()));
+		item.setData(DataComponentTypes.MAX_DAMAGE, maxDamage);
+		return maxDamage;
+	}
+
 	public static @NotNull ItemStack editFishItem(@NotNull ItemStack fishItem, @NotNull FishRarity rarity, double size) {
-		fishItem.editMeta(meta -> {
 
-			PersistentDataContainer nbt = meta.getPersistentDataContainer();
-			nbt.set(KEY_RARITY, PersistentDataType.STRING, rarity.getId());
-			nbt.set(KEY_SIZE, PersistentDataType.DOUBLE, size);
+		fishItem.setAmount(1);
+		fishItem.setData(DataComponentTypes.MAX_STACK_SIZE, 1);
 
-			List<Component> lore = meta.lore();
-			if (lore == null) {
-				lore = new ArrayList<>();
-			}
-			for (String line : ITEM_LORE) {
-				Component loreComponent = MiniMessage.miniMessage().deserialize(
-								line,
-								Placeholder.component("size", Component.text(size)),
-								Placeholder.component("rarity", rarity.getName()))
-						.decoration(TextDecoration.ITALIC, TextDecoration.State.FALSE);
-				lore.add(loreComponent);
-			}
-			meta.lore(lore);
+		fishItem.editPersistentDataContainer(persistentDataContainer -> {
+			persistentDataContainer.set(KEY_RARITY, PersistentDataType.STRING, rarity.getId());
+			persistentDataContainer.set(KEY_SIZE, PersistentDataType.DOUBLE, size);
 		});
+
+		List<Component> loreLines = new ArrayList<>();
+		for (String line : CONFIG_ITEM_LORE) {
+			Component loreComponent = MiniMessage.miniMessage().deserialize(
+							line,
+							Placeholder.component("size", Component.text(size)),
+							Placeholder.component("rarity", rarity.getName()))
+					.decoration(TextDecoration.ITALIC, TextDecoration.State.FALSE);
+			loreLines.add(loreComponent);
+		}
+		fishItem.setData(DataComponentTypes.LORE, ItemLore.lore().addLines(loreLines).build());
+
+		int maxDamage = recalculateMaxDamage(fishItem);
+		if (maxDamage >= 0) {
+			fishItem.setData(DataComponentTypes.DAMAGE, 0);
+		}
 		return fishItem;
 	}
 
 	public static @Nullable Pair<FishRarity, Double> getAttributes(@NotNull ItemStack item) {
-		ItemMeta meta = item.getItemMeta();
-		if (meta == null) return null;
-		return getAttributes(meta.getPersistentDataContainer());
+		return getAttributes(item.getPersistentDataContainer());
 	}
 
-	public static @Nullable Pair<FishRarity, Double> getAttributes(@NotNull PersistentDataContainer container) {
+	public static @Nullable Pair<FishRarity, Double> getAttributes(@NotNull PersistentDataContainerView container) {
 		if (!container.has(KEY_SIZE, PersistentDataType.DOUBLE)) {
 			return null;
 		}
