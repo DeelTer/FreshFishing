@@ -30,6 +30,7 @@ public class PhysicsUtils {
 
 		Bukkit.getScheduler().runTaskLater(FreshFishing.getInstance(), () -> {
 			double g = -0.08;
+			if (target.getWorld() == null || !target.getWorld().equals(entityLoc.getWorld())) return;
 			double d = target.distance(entityLoc);
 
 			if (d < 0.1) {

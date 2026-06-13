@@ -211,7 +211,8 @@ public class FishSaleListener implements Listener {
 
 	private double getItemPrice(ItemStack item) {
 		if (FishUtil.isFish(item)) {
-			if (item.getData(DataComponentTypes.DAMAGE) > 0) return 0;
+			Integer damage = item.getData(DataComponentTypes.DAMAGE);
+			if (damage != null && damage > 0) return 0;
 
 			Pair<FishRarity, Double> attrs = FishUtil.getAttributes(item);
 			if (attrs == null) return 0;
