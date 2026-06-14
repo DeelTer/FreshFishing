@@ -7,6 +7,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.CreatureSpawnEvent;
+import org.bukkit.event.block.BlockCookEvent;
 import org.bukkit.event.inventory.FurnaceSmeltEvent;
 import org.bukkit.event.player.PlayerFishEvent;
 import org.bukkit.event.player.PlayerItemConsumeEvent;
@@ -88,5 +89,17 @@ public class EntityFishListener implements Listener {
 		if (result.isEmpty()) return;
 
 		result.copyDataFrom(source, type -> type != DataComponentTypes.FOOD);
+	}
+
+	@EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
+	public void onFishCampfireCook(@NotNull BlockCookEvent event) {
+		ItemStack source = event.getSource();
+		if (!FishUtil.isFish(source)) return;
+
+		ItemStack result = event.getResult();
+		if (result.isEmpty()) return;
+
+		result.copyDataFrom(source, type -> type != DataComponentTypes.FOOD);
+		event.setResult(result);
 	}
 }
