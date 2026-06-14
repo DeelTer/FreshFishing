@@ -6,8 +6,8 @@ import org.bukkit.entity.*;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
-import org.bukkit.event.entity.CreatureSpawnEvent;
 import org.bukkit.event.block.BlockCookEvent;
+import org.bukkit.event.entity.CreatureSpawnEvent;
 import org.bukkit.event.inventory.FurnaceSmeltEvent;
 import org.bukkit.event.player.PlayerFishEvent;
 import org.bukkit.event.player.PlayerItemConsumeEvent;
@@ -88,7 +88,7 @@ public class EntityFishListener implements Listener {
 		ItemStack result = event.getResult();
 		if (result.isEmpty()) return;
 
-		result.copyDataFrom(source, type -> type != DataComponentTypes.FOOD);
+		result.copyDataFrom(source, this::canCopy);
 	}
 
 	@EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
@@ -99,7 +99,11 @@ public class EntityFishListener implements Listener {
 		ItemStack result = event.getResult();
 		if (result.isEmpty()) return;
 
-		result.copyDataFrom(source, type -> type != DataComponentTypes.FOOD);
+		result.copyDataFrom(source, this::canCopy);
 		event.setResult(result);
+	}
+
+	private boolean canCopy(@NotNull DataComponentType type) {
+		return type != DataComponentTypes.FOOD && type != DataComponentTypes.ITEM_NAME && type != DataComponentTypes.ITEM_MODEL;
 	}
 }
