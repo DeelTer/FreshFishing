@@ -41,19 +41,19 @@ rarities:
   rare:
     name: "<color:#EC5954>Rare</color>"
     blocks: 25
-    multiplier: 1.2
+    multiplier: 1.5
   unique:
     name: "<color:#FA81CA>Unique</color>"
     blocks: 12
-    multiplier: 1.3
+    multiplier: 2.0
   legendary:
     name: "<color:#FFD700>Legendary</color>"
     blocks: 2
-    multiplier: 1.4
+    multiplier: 3.0
   mystery:
     name: "<color:#8B79FF>Mystic</color>"
     blocks: 1
-    multiplier: 1.5
+    multiplier: 5.0
 
 # ==============================================
 # FISH SIZE TIERS
@@ -147,11 +147,20 @@ sale-shop:
   # Then multiplied by rarity's multiplier
   fish-sale-ranges:
     default:
-      min-price: 8
-      max-price: 450
+      min-price: 22
+      max-price: 180
     rare:
-      min-price: 20
-      max-price: 600
+      min-price: 35
+      max-price: 260
+    unique:
+      min-price: 55
+      max-price: 340
+    legendary:
+      min-price: 130
+      max-price: 520
+    mystery:
+      min-price: 180
+      max-price: 700
     # Add more rarities as needed:
     # unique:
     #   min-price: 50
