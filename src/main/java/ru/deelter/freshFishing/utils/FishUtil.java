@@ -139,7 +139,9 @@ public class FishUtil {
 				.orElseThrow(() -> new RuntimeException("No FishSize defined"));
 
 		double scale = (MIN_SCALE + (MAX_SCALE - MIN_SCALE) * (size - tierMin) / (tierMax - tierMin)) * rarity.getMultiplier();
-		ScaleUtils.setScale(fish, scale);
+		double health = scale;
+
+		AttributeUtils.applyFishAttributes(fish, scale, health);
 	}
 
 	public static double getSize(@NotNull Fish fish) {

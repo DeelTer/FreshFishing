@@ -29,8 +29,10 @@ public class UniqueFishParamsListener implements Listener {
 
     private final ProbabilityCollection<FishSize> sizes;
     private final ProbabilityCollection<FishRarity> rarities;
+    private final FreshFishing plugin;
 
     public UniqueFishParamsListener(@NotNull FreshFishing plugin) {
+        this.plugin = plugin;
         this.sizes = plugin.getConfigManager().getSizeCollection();
         this.rarities = plugin.getConfigManager().getRarityCollection();
 
@@ -43,7 +45,9 @@ public class UniqueFishParamsListener implements Listener {
 
         double size = sizes.get().getRandomRoundedSize();
         FishRarity rarity = rarities.get();
-
+        if (fish.getEntitySpawnReason() == CreatureSpawnEvent.SpawnReason.NATURAL) {
+            size = Math.max(size, 80);
+        }
         FishUtil.editFish(fish, size, rarity);
     }
 
