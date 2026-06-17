@@ -46,7 +46,7 @@ public class UniqueFishParamsListener implements Listener {
         double size = sizes.get().getRandomRoundedSize();
         FishRarity rarity = rarities.get();
         if (fish.getEntitySpawnReason() == CreatureSpawnEvent.SpawnReason.NATURAL) {
-            size = Math.min(size, 80);
+            size = Math.min(size, 50);
         }
         FishUtil.editFish(fish, size, rarity);
     }
