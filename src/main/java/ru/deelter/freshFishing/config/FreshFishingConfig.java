@@ -39,6 +39,8 @@ public class FreshFishingConfig {
 
     private final ProbabilityCollection<FishRarity> rarityCollection = new ProbabilityCollection<>();
     private final ProbabilityCollection<FishSize> sizeCollection = new ProbabilityCollection<>();
+    private final ProbabilityCollection<FishRarity> naturalRarityCollection = new ProbabilityCollection<>();
+    private final ProbabilityCollection<FishSize> naturalSizeCollection = new ProbabilityCollection<>();
 
     private final ProbabilityCollection<EntityType> entityCollection = new ProbabilityCollection<>();
 
@@ -145,10 +147,30 @@ public class FreshFishingConfig {
                 int blocks = sizesSec.getInt(id + ".blocks");
                 int lambda = sizesSec.getInt(id + ".lambda");
                 FishSize size = FishSize.builder()
-                        .min(min).max(max).blocks(blocks).lambda(lambda)
+                        .id(id).min(min).max(max).blocks(blocks).lambda(lambda)
                         .build();
                 sizeCollection.add(size, blocks);
                 FishSize.SIZES.add(size);
+            }
+        }
+
+        // === NATURAL FISH POOLS ===
+        naturalSizeCollection.clear();
+        naturalRarityCollection.clear();
+        List<String> naturalSizes = config.getStringList("natural-fish.allowed-sizes");
+        List<String> naturalRarityIds = config.getStringList("natural-fish.allowed-rarities");
+        if (!naturalSizes.isEmpty()) {
+            for (FishSize size : FishSize.SIZES) {
+                if (naturalSizes.contains(size.getId())) {
+                    naturalSizeCollection.add(size, size.getBlocks());
+                }
+            }
+        }
+        if (!naturalRarityIds.isEmpty()) {
+            for (FishRarity rarity : FishRarity.RARITIES) {
+                if (naturalRarityIds.contains(rarity.getId())) {
+                    naturalRarityCollection.add(rarity, rarity.getBlocks());
+                }
             }
         }
 

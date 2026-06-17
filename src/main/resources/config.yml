@@ -94,6 +94,21 @@ sizes:
     lambda: 20
 
 # ==============================================
+# NATURAL FISH SPAWN POOLS
+# ==============================================
+# Controls which size tiers and rarities naturally spawned fish can have.
+# If a list is empty, falls back to the full pool (same as fishing).
+# Tier IDs must match keys under "sizes" above (e.g. tier1, tier2).
+# Rarity IDs must match keys under "rarities" above (e.g. default, rare).
+natural-fish:
+  allowed-sizes:
+    - tier1
+    - tier2
+  allowed-rarities:
+    - default
+    - rare
+
+# ==============================================
 # RANDOM ENTITIES FROM FISHING
 # ==============================================
 # Instead of catching a fish, players may catch other entities.

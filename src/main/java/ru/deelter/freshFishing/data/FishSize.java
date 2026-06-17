@@ -16,6 +16,7 @@ public class FishSize {
 
 	public static final Set<FishSize> SIZES = new HashSet<>();
 
+	private final String id;
 	private final double min, max;
 	private final int blocks, lambda;
 

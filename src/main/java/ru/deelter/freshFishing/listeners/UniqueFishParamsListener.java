@@ -43,10 +43,16 @@ public class UniqueFishParamsListener implements Listener {
     public void onFishSpawn(@NotNull CreatureSpawnEvent event) {
         if (!(event.getEntity() instanceof Fish fish)) return;
 
-        double size = sizes.get().getRandomRoundedSize();
-        FishRarity rarity = rarities.get();
+        double size;
+        FishRarity rarity;
         if (fish.getEntitySpawnReason() == CreatureSpawnEvent.SpawnReason.NATURAL) {
-            size = Math.min(size, 50);
+            var naturalSizes = plugin.getConfigManager().getNaturalSizeCollection();
+            var naturalRarities = plugin.getConfigManager().getNaturalRarityCollection();
+            size = (naturalSizes.isEmpty() ? sizes : naturalSizes).get().getRandomRoundedSize();
+            rarity = (naturalRarities.isEmpty() ? rarities : naturalRarities).get();
+        } else {
+            size = sizes.get().getRandomRoundedSize();
+            rarity = rarities.get();
         }
         FishUtil.editFish(fish, size, rarity);
     }
