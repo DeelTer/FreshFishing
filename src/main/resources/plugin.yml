@@ -10,8 +10,8 @@ softdepend:
 
 commands:
   fish:
-    description: Open fish sale menu
-    usage: /fish menu [player]
+    description: Open fish sale menu or reload config
+    usage: /fish menu [player] | /fish reload
   sandmarker:
     description: Manage sand loot markers
     usage: /sandmarker <create|list|remove>
