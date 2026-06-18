@@ -48,7 +48,7 @@ public class FishBaitListener implements Listener {
         for (ItemStack bait : requiredBaits) {
             int amount = 0;
             for (ItemStack content : player.getInventory().getContents()) {
-                if (content != null && content.isSimilar(bait)) {
+                if (content != null && content.getType().equals(bait.getType())) {
                     amount += content.getAmount();
                 }
             }
@@ -57,7 +57,7 @@ public class FishBaitListener implements Listener {
                     int toRemove = 1;
                     for (int i = 0; i < player.getInventory().getSize(); i++) {
                         ItemStack item = player.getInventory().getItem(i);
-                        if (item != null && item.isSimilar(bait)) {
+                        if (item != null && item.getType().equals(bait.getType())) {
                             int amt = item.getAmount();
                             if (amt > toRemove) {
                                 item.setAmount(amt - toRemove);
