@@ -7,6 +7,7 @@ import org.bukkit.Sound;
 import org.bukkit.block.BlockFace;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.FishHook;
+import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -101,7 +102,8 @@ public class GrapplingHookListener implements Listener {
 		if (hooked == null) return;
 		Player player = event.getPlayer();
 
-		boolean entityHigher = hooked.getLocation().getY() > player.getEyeLocation().getY() + yOffsetCheck;
+		Location hookedRef = hooked instanceof LivingEntity le ? le.getEyeLocation() : hooked.getLocation();
+		boolean entityHigher = hookedRef.getY() > player.getEyeLocation().getY() + yOffsetCheck;
 		if (player.isSneaking()) {
 			pullEntity(hooked, player.getLocation(), pullEntityStrength);
 		} else {
