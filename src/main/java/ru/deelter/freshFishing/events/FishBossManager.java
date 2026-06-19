@@ -20,8 +20,10 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
+import org.bukkit.event.entity.EntityChangeBlockEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityDeathEvent;
+import org.bukkit.Sound;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.scheduler.BukkitTask;
 import org.bukkit.util.Vector;
@@ -45,6 +47,7 @@ public class FishBossManager implements Listener {
     private final FreshFishing plugin;
     private final EventsConfig config;
     private final Map<UUID, BossData> activeBosses = new HashMap<>();
+    private final Set<UUID> bossFallingBlocks = new HashSet<>();
 
     private static class BossData {
         final LivingEntity entity;
@@ -151,14 +154,18 @@ public class FishBossManager implements Listener {
         double vy = (dy + 0.5 * GRAVITY * t * t) / t;
         vy = Math.max(0.25, Math.min(vy, 1.8)); // reasonable clamp
 
-        entity.setAI(false);
-        entity.setVelocity(new Vector(vx, vy, vz));
+        final Vector velocity = new Vector(vx, vy, vz);
+        // Re-apply velocity for 4 consecutive ticks — AI override fights single-tick application
+        for (int i = 0; i < 4; i++) {
+            Bukkit.getScheduler().runTaskLater(plugin, () -> {
+                if (!entity.isValid() || entity.isDead()) return;
+                entity.setVelocity(velocity);
+            }, i);
+        }
 
-        // Re-enable AI and trigger impact after flight time
         long impactDelay = Math.max(15L, (long) (t * 0.9));
         Bukkit.getScheduler().runTaskLater(plugin, () -> {
             if (!entity.isValid() || entity.isDead()) return;
-            entity.setAI(true);
             if (activeBosses.containsKey(id)) handleImpact(entity);
         }, impactDelay);
     }
@@ -191,10 +198,9 @@ public class FishBossManager implements Listener {
     private void spawnImpactParticles(@NonNull Location loc) {
         World world = loc.getWorld();
         if (world == null) return;
-        // White smoke cloud — "heavy landing"
+        world.playSound(loc, Sound.ENTITY_GENERIC_EXPLODE, 1.5f, 0.8f);
         world.spawnParticle(Particle.CLOUD, loc, 30, 0.5, 0.1, 0.5, 0.05);
         world.spawnParticle(Particle.WHITE_SMOKE, loc, 20, 0.4, 0.2, 0.4, 0.02);
-        // Visual explosion (no griefing)
         world.spawnParticle(Particle.EXPLOSION, loc, 3, 0.3, 0.1, 0.3, 0);
     }
 
@@ -226,8 +232,12 @@ public class FishBossManager implements Listener {
             double upward = 0.25 + RANDOM.nextDouble() * 0.45;
             fb.setVelocity(new Vector(Math.cos(angle) * speed, upward, Math.sin(angle) * speed));
 
-            // Remove before it converts to a placed block
-            Bukkit.getScheduler().runTaskLater(plugin, fb::remove, 60L);
+            UUID fbId = fb.getUniqueId();
+            bossFallingBlocks.add(fbId);
+            Bukkit.getScheduler().runTaskLater(plugin, () -> {
+                bossFallingBlocks.remove(fbId);
+                fb.remove();
+            }, 60L);
         }
     }
 
@@ -239,6 +249,13 @@ public class FishBossManager implements Listener {
         }
         for (Player p : inRange) {
             if (!data.bar.getPlayers().contains(p)) data.bar.addPlayer(p);
+        }
+    }
+
+    @EventHandler
+    public void onFallingBlockPlace(@NonNull EntityChangeBlockEvent event) {
+        if (bossFallingBlocks.contains(event.getEntity().getUniqueId())) {
+            event.setCancelled(true);
         }
     }
 
@@ -325,7 +342,6 @@ public class FishBossManager implements Listener {
         if (data.lungeTask != null) data.lungeTask.cancel();
         data.despawnTask.cancel();
         data.bar.removeAll();
-        if (data.entity.isValid()) data.entity.setAI(true);
     }
 
     public void shutdown() {
