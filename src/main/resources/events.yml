@@ -7,10 +7,8 @@ boss-fish:
   enabled: true
   # Probability per fish catch (0.0 - 1.0). 0.03 = 3%
   chance: 0.03
-  health-min: 70.0
-  health-max: 120.0
-  # Fixed visual scale for boss fish (Minecraft cap: 16.0). ~10 ≈ size 200cm legendary.
-  boss-scale: 10.0
+  health-min: 120.0
+  health-max: 200.0
   # Random lunge interval range in ticks (60-80 ticks = 3-4 seconds)
   lunge-interval-min-ticks: 60
   lunge-interval-max-ticks: 80
@@ -21,7 +19,7 @@ boss-fish:
   natural-jump-damage-radius: 3.0
   # Damage dealt to players within radius on landing (detected via fall damage event)
   jump-damage: 1.5
-  jump-damage-radius: 2.5
+  jump-damage-radius: 4
   # Number of falling block debris spawned on impact
   impact-falling-block-count: 8
   # BossBar visibility radius in blocks
