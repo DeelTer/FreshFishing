@@ -13,12 +13,12 @@ boss-fish:
   lunge-interval-min-ticks: 60
   lunge-interval-max-ticks: 80
   # Horizontal lunge speed (blocks/tick). Arc height is calculated from this + distance.
-  steer-strength: 0.55
+  steer-strength: 1.1
   # Damage dealt to nearby players on each natural fish jump (1 heart = 2.0)
   natural-jump-damage: 2.0
   natural-jump-damage-radius: 3.0
   # Damage dealt to players within radius on landing (detected via fall damage event)
-  jump-damage: 1.5
+  jump-damage: 5.0
   jump-damage-radius: 4
   # Number of falling block debris spawned on impact
   impact-falling-block-count: 8

@@ -152,7 +152,7 @@ public class FishBossManager implements Listener {
         double t = hDist / hSpeed; // ticks to reach horizontal target
         double dy = to.getY() - from.getY();
         double vy = (dy + 0.5 * GRAVITY * t * t) / t;
-        vy = Math.max(0.25, Math.min(vy, 1.8)); // reasonable clamp
+        vy = Math.max(0.4, Math.min(vy, 3.0));
 
         final Vector velocity = new Vector(vx, vy, vz);
         // Re-apply velocity for 4 consecutive ticks — AI override fights single-tick application
@@ -170,12 +170,14 @@ public class FishBossManager implements Listener {
         }, impactDelay);
     }
 
-    // Cancel fall damage so boss doesn't die from its own lunges
+    // Cancel fall + dryout damage so boss doesn't die from lunges or being on land
     @EventHandler(priority = EventPriority.HIGH)
-    public void onBossFallDamage(@NonNull EntityDamageEvent event) {
+    public void onBossDamage(@NonNull EntityDamageEvent event) {
         if (!activeBosses.containsKey(event.getEntity().getUniqueId())) return;
-        if (event.getDamageSource().getDamageType() != DamageType.FALL) return;
-        event.setCancelled(true);
+        DamageType type = event.getDamageSource().getDamageType();
+        if (type == DamageType.FALL || type == DamageType.DRYOUT) {
+            event.setCancelled(true);
+        }
     }
 
     private void handleImpact(@NonNull LivingEntity entity) {
