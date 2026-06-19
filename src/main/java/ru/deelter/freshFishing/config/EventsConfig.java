@@ -21,6 +21,7 @@ public class EventsConfig {
     private double bossFishChance;
     private double bossFishHealthMin;
     private double bossFishHealthMax;
+    private double bossScale;
     private int lungeIntervalMin;
     private int lungeIntervalMax;
     private double steerStrength;
@@ -60,6 +61,7 @@ public class EventsConfig {
         bossFishChance = cfg.getDouble("boss-fish.chance", 0.05);
         bossFishHealthMin = cfg.getDouble("boss-fish.health-min", 70.0);
         bossFishHealthMax = cfg.getDouble("boss-fish.health-max", 120.0);
+        bossScale = cfg.getDouble("boss-fish.boss-scale", 10.0);
         lungeIntervalMin = cfg.getInt("boss-fish.lunge-interval-min-ticks", 60);
         lungeIntervalMax = cfg.getInt("boss-fish.lunge-interval-max-ticks", 80);
         steerStrength = cfg.getDouble("boss-fish.steer-strength", 0.55);

@@ -1,5 +1,6 @@
 package ru.deelter.freshFishing.events;
 
+import com.destroystokyo.paper.event.entity.EntityJumpEvent;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -21,7 +22,6 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityDeathEvent;
-import org.bukkit.event.entity.EntityJumpEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.scheduler.BukkitTask;
 import org.bukkit.util.Vector;
@@ -30,16 +30,10 @@ import ru.deelter.freshFishing.FreshFishing;
 import ru.deelter.freshFishing.config.EventsConfig;
 import ru.deelter.freshFishing.data.FishRarity;
 import ru.deelter.freshFishing.data.FishSize;
+import ru.deelter.freshFishing.utils.AttributeUtils;
 import ru.deelter.freshFishing.utils.FishUtil;
 
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Random;
-import java.util.UUID;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class FishBossManager implements Listener {
@@ -89,8 +83,9 @@ public class FishBossManager implements Listener {
 
         double size = tier.getRandomRoundedSize();
 
-        // Apply scale via editFish (sets visual size attribute), then override HP
+        // editFish sets NBT + lore; then override scale and HP with boss values
         FishUtil.editFish((Fish) entity, size, rarity);
+        AttributeUtils.setScale(entity, config.getBossScale());
         double hp = config.getBossFishHealthMin()
                 + RANDOM.nextDouble() * (config.getBossFishHealthMax() - config.getBossFishHealthMin());
         setMaxHealth(entity, hp);
@@ -130,7 +125,7 @@ public class FishBossManager implements Listener {
 
         // Update bossbar
         double maxHp = entity.getAttribute(Attribute.MAX_HEALTH).getValue();
-        data.bar.setProgress(Math.max(0.0, Math.min(1.0, entity.getHealth() / maxHp)));
+        data.bar.setProgress(Math.clamp(entity.getHealth() / maxHp, 0.0, 1.0));
         updateBossBarViewers(data);
 
         // Lunge toward nearest player with ballistic arc
@@ -156,18 +151,24 @@ public class FishBossManager implements Listener {
         double vy = (dy + 0.5 * GRAVITY * t * t) / t;
         vy = Math.max(0.25, Math.min(vy, 1.8)); // reasonable clamp
 
+        entity.setAI(false);
         entity.setVelocity(new Vector(vx, vy, vz));
-        entity.setFallDistance(0f); // reset so fall damage triggers on landing
+
+        // Re-enable AI and trigger impact after flight time
+        long impactDelay = Math.max(15L, (long) (t * 0.9));
+        Bukkit.getScheduler().runTaskLater(plugin, () -> {
+            if (!entity.isValid() || entity.isDead()) return;
+            entity.setAI(true);
+            if (activeBosses.containsKey(id)) handleImpact(entity);
+        }, impactDelay);
     }
 
-    // Detect landing via fall damage — use as impact trigger
+    // Cancel fall damage so boss doesn't die from its own lunges
     @EventHandler(priority = EventPriority.HIGH)
     public void onBossFallDamage(@NonNull EntityDamageEvent event) {
         if (!activeBosses.containsKey(event.getEntity().getUniqueId())) return;
         if (event.getDamageSource().getDamageType() != DamageType.FALL) return;
-
-        event.setCancelled(true); // boss doesn't take fall damage, only triggers effects
-        handleImpact((LivingEntity) event.getEntity());
+        event.setCancelled(true);
     }
 
     private void handleImpact(@NonNull LivingEntity entity) {
@@ -232,7 +233,7 @@ public class FishBossManager implements Listener {
 
     private void updateBossBarViewers(@NonNull BossData data) {
         Location loc = data.entity.getLocation();
-        List<Player> inRange = loc.getWorld().getNearbyPlayers(loc, config.getBossbarRadius());
+        Collection<Player> inRange = loc.getWorld().getNearbyPlayers(loc, config.getBossbarRadius());
         for (Player existing : data.bar.getPlayers()) {
             if (!inRange.contains(existing)) data.bar.removePlayer(existing);
         }
@@ -324,6 +325,7 @@ public class FishBossManager implements Listener {
         if (data.lungeTask != null) data.lungeTask.cancel();
         data.despawnTask.cancel();
         data.bar.removeAll();
+        if (data.entity.isValid()) data.entity.setAI(true);
     }
 
     public void shutdown() {

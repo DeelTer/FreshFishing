@@ -9,6 +9,8 @@ boss-fish:
   chance: 0.03
   health-min: 70.0
   health-max: 120.0
+  # Fixed visual scale for boss fish (Minecraft cap: 16.0). ~10 ≈ size 200cm legendary.
+  boss-scale: 10.0
   # Random lunge interval range in ticks (60-80 ticks = 3-4 seconds)
   lunge-interval-min-ticks: 60
   lunge-interval-max-ticks: 80
