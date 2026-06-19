@@ -104,13 +104,14 @@ public class GrapplingHookListener implements Listener {
 
 		Location hookedRef = hooked instanceof LivingEntity le ? le.getEyeLocation() : hooked.getLocation();
 		boolean entityHigher = hookedRef.getY() > player.getEyeLocation().getY() + yOffsetCheck;
+		Location playerRef = player.getEyeLocation();
 		if (player.isSneaking()) {
-			pullEntity(hooked, player.getLocation(), pullEntityStrength);
+			pullEntity(hooked, playerRef, pullEntityStrength);
 		} else {
 			if (entityHigher) {
-				pullEntity(player, hooked.getLocation(), pullStrength);
+				pullEntity(player, hookedRef, pullStrength);
 			} else {
-				pullEntity(hooked, player.getLocation(), pullEntityStrength);
+				pullEntity(hooked, playerRef, pullEntityStrength);
 			}
 		}
 		playEffects(player.getLocation(), hooked.getLocation());
@@ -124,7 +125,8 @@ public class GrapplingHookListener implements Listener {
 					dragHorizontal, dragVertical);
 		} else {
 			// Упрощённый вариант
-			Vector toTarget = target.toVector().subtract(entity.getLocation().toVector());
+			Location entityRef = entity instanceof LivingEntity le ? le.getEyeLocation() : entity.getLocation();
+			Vector toTarget = target.toVector().subtract(entityRef.toVector());
 			double len = toTarget.length();
 			if (len < 0.1) return;
 			Vector vel = toTarget.normalize().multiply(Math.min(strength, len));
