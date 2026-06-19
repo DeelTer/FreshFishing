@@ -29,6 +29,7 @@ public class FishCommand implements CommandExecutor, TabCompleter {
 				return true;
 			}
 			FreshFishing.getInstance().getConfigManager().reload();
+			FreshFishing.getInstance().getEventsConfig().reload();
 			sender.sendMessage(Component.text("FreshFishing config reloaded.", NamedTextColor.GREEN));
 			return true;
 		}

@@ -5,7 +5,9 @@ import org.bukkit.NamespacedKey;
 import org.bukkit.plugin.java.JavaPlugin;
 import ru.deelter.freshFishing.commands.FishCommand;
 import ru.deelter.freshFishing.commands.SandMarkerCommand;
+import ru.deelter.freshFishing.config.EventsConfig;
 import ru.deelter.freshFishing.config.FreshFishingConfig;
+import ru.deelter.freshFishing.events.FishBossManager;
 import ru.deelter.freshFishing.listeners.*;
 import ru.deelter.freshFishing.sandloot.SandLootManager;
 
@@ -16,6 +18,8 @@ public final class FreshFishing extends JavaPlugin {
 	private static FreshFishing instance;
 	private NamespacedKey markerKey;
 	private FreshFishingConfig configManager;
+	private EventsConfig eventsConfig;
+	private FishBossManager fishBossManager;
 
 	@Override
 	public void onLoad() {
@@ -27,6 +31,8 @@ public final class FreshFishing extends JavaPlugin {
 	public void onEnable() {
 		saveDefaultConfig();
 		this.configManager = new FreshFishingConfig(this);
+		this.eventsConfig = new EventsConfig(this);
+		this.fishBossManager = new FishBossManager(this);
 
 		new FishMetrics(this, 31328);
 		new UniqueFishParamsListener(this);
@@ -49,5 +55,6 @@ public final class FreshFishing extends JavaPlugin {
 	@Override
 	public void onDisable() {
 		if (SandLootManager.get() != null) SandLootManager.get().shutdown();
+		if (fishBossManager != null) fishBossManager.shutdown();
 	}
 }

@@ -2,12 +2,14 @@ package ru.deelter.freshFishing.listeners;
 
 import io.papermc.paper.datacomponent.DataComponentType;
 import io.papermc.paper.datacomponent.DataComponentTypes;
+import org.bukkit.damage.DamageType;
 import org.bukkit.entity.*;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockCookEvent;
 import org.bukkit.event.entity.CreatureSpawnEvent;
+import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.inventory.FurnaceSmeltEvent;
 import org.bukkit.event.player.PlayerFishEvent;
 import org.bukkit.event.player.PlayerItemConsumeEvent;
@@ -15,7 +17,9 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.util.Vector;
 import org.jetbrains.annotations.NotNull;
 import ru.deelter.freshFishing.FreshFishing;
+import ru.deelter.freshFishing.config.EventsConfig;
 import ru.deelter.freshFishing.config.FreshFishingConfig;
+import ru.deelter.freshFishing.events.FishBossManager;
 import ru.deelter.freshFishing.utils.FishUtil;
 import ru.deelter.freshFishing.utils.ProbabilityCollection;
 
@@ -24,6 +28,8 @@ public class EntityFishListener implements Listener {
 	private final ProbabilityCollection<EntityType> possibleEntities;
 	private final double vectorMultiply, vectorX, vectorY, vectorZ;
 	private final int fishConsumeDamage;
+	private final FishBossManager bossManager;
+	private final EventsConfig eventsConfig;
 
 	public EntityFishListener(@NotNull FreshFishing plugin) {
 		FreshFishingConfig config = plugin.getConfigManager();
@@ -33,6 +39,8 @@ public class EntityFishListener implements Listener {
 		this.vectorY = config.getVectorY();
 		this.vectorZ = config.getVectorZ();
 		this.fishConsumeDamage = config.getFishConsumeDamage();
+		this.bossManager = plugin.getFishBossManager();
+		this.eventsConfig = plugin.getEventsConfig();
 		plugin.getServer().getPluginManager().registerEvents(this, plugin);
 	}
 
@@ -50,6 +58,14 @@ public class EntityFishListener implements Listener {
 				possibleEntities.get(),
 				CreatureSpawnEvent.SpawnReason.CUSTOM
 		);
+
+		if (fishedEntity instanceof LivingEntity living) {
+			if (eventsConfig.isMonsterBoostEnabled() && living instanceof Monster) {
+				double base = living.getAttribute(org.bukkit.attribute.Attribute.MAX_HEALTH).getBaseValue();
+				FishBossManager.setMaxHealth(living, base * eventsConfig.getMonsterHealthMultiplier());
+			}
+			bossManager.trySpawnBoss(living, player);
+		}
 
 		Vector playerVector = player.getLocation().toVector();
 		Vector fishedVector = fishedEntity.getLocation().toVector();

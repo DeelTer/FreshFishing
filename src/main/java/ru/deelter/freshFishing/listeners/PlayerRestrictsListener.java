@@ -70,6 +70,13 @@ public class PlayerRestrictsListener implements Listener {
             event.setCancelled(true);
             return;
         }
-        player.setFoodLevel(playerFoodLevel - hungerPoints);
+
+        float saturation = player.getSaturation();
+        if (saturation >= hungerPoints) {
+            player.setSaturation(saturation - hungerPoints);
+        } else {
+            player.setSaturation(0f);
+            player.setFoodLevel(playerFoodLevel - (hungerPoints - (int) saturation));
+        }
     }
 }

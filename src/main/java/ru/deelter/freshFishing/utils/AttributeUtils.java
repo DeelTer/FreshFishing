@@ -32,14 +32,14 @@ public class AttributeUtils {
 		scale.setBaseValue(scaleValue);
 	}
 
-	public static void setMaxHealth(@NonNull LivingEntity fish, double healthValue) {
-		AttributeInstance attribute = fish.getAttribute(Attribute.MAX_HEALTH);
+	public static void setMaxHealth(@NonNull LivingEntity entity, double healthValue) {
+		AttributeInstance attribute = entity.getAttribute(Attribute.MAX_HEALTH);
 		if (attribute == null) return;
 		if (attribute.getBaseValue() > healthValue) {
 			healthValue = attribute.getBaseValue();
 		}
 		attribute.setBaseValue(healthValue);
-		fish.setHealth(healthValue);
+		entity.setHealth(healthValue);
 	}
 
 	public static void applyFishAttributes(@NotNull Fish fish, double scale, double health) {

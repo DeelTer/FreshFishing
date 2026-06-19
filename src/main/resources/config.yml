@@ -9,7 +9,7 @@ fish: 1
 item: 0
 
 # Fish durability
-fish-consume-damage: 25
+fish-consume-damage: 20
 
 # ==============================================
 # ITEM LORE FOR FISH
@@ -36,24 +36,24 @@ item-lore:
 rarities:
   default:
     name: "<color:#D5D5D5>Default</color>"
-    blocks: 100
+    blocks: 165
     multiplier: 1.0
   rare:
     name: "<color:#EC5954>Rare</color>"
-    blocks: 25
-    multiplier: 1.5
+    blocks: 90
+    multiplier: 1.4
   unique:
     name: "<color:#FA81CA>Unique</color>"
-    blocks: 12
-    multiplier: 2.0
+    blocks: 40
+    multiplier: 1.8
   legendary:
     name: "<color:#FFD700>Legendary</color>"
-    blocks: 2
-    multiplier: 3.0
+    blocks: 15
+    multiplier: 2.0
   mystery:
     name: "<color:#8B79FF>Mystic</color>"
     blocks: 1
-    multiplier: 5.0
+    multiplier: 4.0
 
 # ==============================================
 # FISH SIZE TIERS
@@ -71,21 +71,21 @@ sizes:
     min: 6.0
     max: 16.0
     blocks: 120
-    lambda: 4
+    lambda: 5
   tier2:
     min: 16.1
     max: 36.0
-    blocks: 40
+    blocks: 80
     lambda: 4
   tier3:
     min: 36.1
     max: 54.0
-    blocks: 22
+    blocks: 40
     lambda: 4
   tier4:
     min: 54.1
     max: 140.0
-    blocks: 12
+    blocks: 30
     lambda: 4
   tier5:
     min: 140.1
@@ -107,7 +107,6 @@ natural-fish:
   allowed-rarities:
     - default
     - rare
-
 # ==============================================
 # RANDOM ENTITIES FROM FISHING
 # ==============================================
@@ -116,10 +115,12 @@ natural-fish:
 # Values are weight (blocks) for probability selection.
 # Full entity list: https://jd.papermc.io/paper/1.21.11/org/bukkit/entity/EntityType.html
 entities:
-  COD: 65
+  COD: 75
   SALMON: 60
   TROPICAL_FISH: 55
-  PUFFERFISH: 15
+  PUFFERFISH: 20
+  NAUTILUS: 10
+  ZOMBIE_NAUTILUS: 5
   SQUID: 8
   TURTLE: 8
   DROWNED: 6
@@ -162,20 +163,20 @@ sale-shop:
   # Then multiplied by rarity's multiplier
   fish-sale-ranges:
     default:
-      min-price: 22
-      max-price: 180
+      min-price: 4
+      max-price: 50
     rare:
-      min-price: 35
-      max-price: 260
+      min-price: 30
+      max-price: 100
     unique:
-      min-price: 55
-      max-price: 340
+      min-price: 50
+      max-price: 180
     legendary:
-      min-price: 130
-      max-price: 520
+      min-price: 70
+      max-price: 300
     mystery:
-      min-price: 180
-      max-price: 700
+      min-price: 150
+      max-price: 350
     # Add more rarities as needed:
     # unique:
     #   min-price: 50
@@ -207,8 +208,8 @@ sale-shop:
     INK_SAC: 0.5
     TRIDENT: 20.0
     LILY_PAD: 2.0
-    BOW: 6.0
-    CROSSBOW: 20.0
+    BOW: 5.0
+    CROSSBOW: 15.0
     BOWL: 2.0
     LEATHER: 2.0
     NAME_TAG: 4.0
@@ -222,6 +223,565 @@ sale-shop:
     SLIME_BALL: 0.5
     FISHING_ROD: 20.0
     BRUSH: 15.0
+    gold_block: 72
+    gold_ingot: 8
+    gold_nugget: 1
+    shulker_box: 166.3
+    white_shulker_box: 167.8
+    light_gray_shulker_box: 167.8
+    gray_shulker_box: 167.8
+    black_shulker_box: 167.8
+    brown_shulker_box: 167.8
+    red_shulker_box: 167.8
+    orange_shulker_box: 167.8
+    yellow_shulker_box: 167.8
+    lime_shulker_box: 167.8
+    green_shulker_box: 167.8
+    cyan_shulker_box: 167.8
+    light_blue_shulker_box: 167.8
+    blue_shulker_box: 167.8
+    purple_shulker_box: 167.8
+    magenta_shulker_box: 167.8
+    pink_shulker_box: 167.8
+    white_bed: 17.3
+    light_gray_bed: 17.3
+    gray_bed: 17.3
+    black_bed: 17.3
+    brown_bed: 17.3
+    red_bed: 17.3
+    orange_bed: 17.3
+    yellow_bed: 17.3
+    lime_bed: 17.3
+    green_bed: 17.3
+    cyan_bed: 17.3
+    light_blue_bed: 17.3
+    blue_bed: 17.3
+    purple_bed: 17.3
+    magenta_bed: 17.3
+    pink_bed: 17.3
+    candle: 12.7
+    white_candle: 12.7
+    light_gray_candle: 12.7
+    gray_candle: 12.7
+    black_candle: 12.7
+    brown_candle: 12.7
+    red_candle: 12.7
+    orange_candle: 12.7
+    yellow_candle: 12.7
+    lime_candle: 12.7
+    green_candle: 12.7
+    cyan_candle: 12.7
+    light_blue_candle: 12.7
+    blue_candle: 12.7
+    purple_candle: 12.7
+    magenta_candle: 12.7
+    pink_candle: 12.7
+    white_banner: 23.2
+    light_gray_banner: 23.2
+    gray_banner: 23.2
+    black_banner: 23.2
+    brown_banner: 23.2
+    red_banner: 23.2
+    orange_banner: 23.2
+    yellow_banner: 23.2
+    lime_banner: 23.2
+    green_banner: 23.2
+    cyan_banner: 23.2
+    light_blue_banner: 23.2
+    blue_banner: 23.2
+    purple_banner: 23.2
+    magenta_banner: 23.2
+    pink_banner: 23.2
+    apple: 3
+    golden_apple: 15
+    enchanted_golden_apple: 34.6
+    melon_slice: 5
+    chorus_fruit: 16.4
+    carrot: 6.1
+    golden_carrot: 16.1
+    potato: 3
+    baked_potato: 7.3
+    poisonous_potato: 1.1
+    beetroot: 3
+    dried_kelp: 4.9
+    beef: 9.5
+    cooked_beef: 9.5
+    porkchop: 9.5
+    cooked_porkchop: 9.5
+    mutton: 9.5
+    cooked_mutton: 9.5
+    chicken: 9.5
+    cooked_chicken: 9.5
+    rabbit: 12.1
+    cooked_rabbit: 9.5
+    cod: 0.5
+    cooked_cod: 1.5
+    salmon: 0.5
+    cooked_salmon: 1.5
+    tropical_fish: 0.5
+    pufferfish: 0.5
+    bread: 7
+    cookie: 17.6
+    cake: 22
+    pumpkin_pie: 20
+    rotten_flesh: 0.7
+    spider_eye: 0.7
+    mushroom_stew: 3.6
+    beetroot_soup: 12.8
+    rabbit_stew: 31
+    suspicious_stew: 8.4
+    snowball: 5.9
+    egg: 0.3
+    brown_egg: 0.3
+    blue_egg: 0.3
+    leather_helmet: 12.3
+    leather_chestplate: 12.3
+    leather_leggings: 12.3
+    leather_boots: 12.3
+    copper_helmet: 18.3
+    copper_chestplate: 18.3
+    copper_leggings: 18.3
+    copper_boots: 18.3
+    chainmail_helmet: 22.5
+    chainmail_chestplate: 22.5
+    chainmail_leggings: 22.5
+    chainmail_boots: 22.5
+    iron_helmet: 28.1
+    iron_chestplate: 28.1
+    iron_leggings: 28.1
+    iron_boots: 28.1
+    golden_helmet: 33.2
+    golden_chestplate: 43.5
+    golden_leggings: 39.3
+    golden_boots: 12.8
+    diamond_helmet: 35.6
+    diamond_chestplate: 35.6
+    diamond_leggings: 35.6
+    diamond_boots: 35.6
+    netherite_helmet: 178.9
+    netherite_chestplate: 178.9
+    netherite_leggings: 178.9
+    netherite_boots: 178.9
+    turtle_helmet: 100.1
+    leather_horse_armor: 9.3
+    copper_horse_armor: 9.3
+    iron_horse_armor: 10
+    golden_horse_armor: 8
+    diamond_horse_armor: 1
+    wolf_armor: 13.2
+    wooden_sword: 15.3
+    stone_sword: 20.7
+    copper_sword: 20.7
+    iron_sword: 34.8
+    golden_sword: 15.3
+    diamond_sword: 46.1
+    netherite_sword: 178.9
+    trident: 54.5
+    mace: 54.6
+    shield: 16.1
+    music_disc_13: 1
+    music_disc_cat: 1
+    music_disc_blocks: 1
+    music_disc_chirp: 1
+    music_disc_far: 1
+    music_disc_mall: 1
+    music_disc_mellohi: 1
+    music_disc_stal: 1
+    music_disc_strad: 1
+    music_disc_ward: 1
+    music_disc_11: 1
+    music_disc_creator_music_box: 1
+    music_disc_wait: 1
+    music_disc_creator: 1
+    music_disc_precipice: 1
+    music_disc_otherside: 1
+    music_disc_relic: 1
+    music_disc_5: 1
+    music_disc_pigstep: 1
+    music_disc_tears: 1
+    music_disc_lava_chicken: 1
+    oak_boat: 1
+    spruce_boat: 1
+    spruce_chest_boat: 1
+    birch_boat: 1
+    birch_chest_boat: 1
+    jungle_boat: 1
+    jungle_chest_boat: 1
+    acacia_boat: 1
+    acacia_chest_boat: 1
+    dark_oak_boat: 1
+    dark_oak_chest_boat: 1
+    mangrove_boat: 1
+    mangrove_chest_boat: 1
+    cherry_boat: 1
+    cherry_chest_boat: 1
+    pale_oak_boat: 1
+    pale_oak_chest_boat: 1
+    bamboo_raft: 1
+    bundle: 13.2
+    white_bundle: 13.2
+    light_gray_bundle: 13.2
+    gray_bundle: 13.2
+    black_bundle: 13.2
+    brown_bundle: 13.2
+    red_bundle: 13.2
+    orange_bundle: 13.2
+    yellow_bundle: 13.2
+    lime_bundle: 13.2
+    green_bundle: 13.2
+    cyan_bundle: 13.2
+    light_blue_bundle: 13.2
+    blue_bundle: 13.2
+    purple_bundle: 13.2
+    magenta_bundle: 13.2
+    pink_bundle: 13.2
+    bucket: 13.4
+    water_bucket: 13.4
+    cod_bucket: 17.8
+    salmon_bucket: 17.8
+    tropical_fish_bucket: 17.8
+    pufferfish_bucket: 17.8
+    axolotl_bucket: 33.9
+    tadpole_bucket: 33.9
+    lava_bucket: 47.9
+    powder_snow_bucket: 47.9
+    milk_bucket: 13.4
+    skeleton_skull: 36.6
+    wither_skeleton_skull: 36.6
+    player_head: 0.1
+    zombie_head: 36.6
+    creeper_head: 36.6
+    piglin_head: 36.6
+    dragon_head: 36.6
+    chest: 13.3
+    copper_chest: 13.3
+    exposed_copper_chest: 13.3
+    weathered_copper_chest: 13.3
+    oxidized_copper_chest: 13.3
+    waxed_copper_chest: 13.3
+    waxed_exposed_copper_chest: 13.3
+    waxed_weathered_copper_chest: 13.3
+    waxed_oxidized_copper_chest: 13.3
+    barrel: 15.1
+    ender_chest: 145.8
+    respawn_anchor: 54.1
+    flower_pot: 5
+    decorated_pot: 5
+    armor_stand: 6
+    item_frame: 4
+    glow_item_frame: 6
+    painting: 4
+    torch: 5
+    soul_torch: 9
+    copper_torch: 6
+    redstone_torch: 4
+    lantern: 9
+    soul_lantern: 13
+    copper_lantern: 13
+    exposed_copper_lantern: 13
+    weathered_copper_lantern: 13
+    oxidized_copper_lantern: 13
+    waxed_copper_lantern: 13
+    waxed_exposed_copper_lantern: 13
+    waxed_weathered_copper_lantern: 13
+    waxed_oxidized_copper_lantern: 13
+    crafting_table: 6
+    stonecutter: 6
+    cartography_table: 6
+    fletching_table: 6
+    smithing_table: 6
+    grindstone: 6
+    loom: 6
+    furnace: 6
+    smoker: 16
+    blast_furnace: 6
+    campfire: 16
+    soul_campfire: 24.7
+    anvil: 30
+    chipped_anvil: 30
+    damaged_anvil: 30
+    composter: 6
+    note_block: 7
+    jukebox: 12
+    enchanting_table: 6
+    brewing_stand: 19
+    cauldron: 16
+    wooden_pickaxe: 15
+    wooden_axe: 15
+    wooden_shovel: 15
+    wooden_hoe: 15
+    stone_pickaxe: 25
+    stone_axe: 25
+    stone_shovel: 25
+    stone_hoe: 25
+    copper_pickaxe: 25
+    copper_axe: 25
+    copper_shovel: 25
+    copper_hoe: 25
+    iron_pickaxe: 35
+    iron_axe: 35
+    iron_shovel: 35
+    iron_hoe: 35
+    golden_pickaxe: 35
+    golden_axe: 35
+    golden_shovel: 35
+    golden_hoe: 35
+    diamond_pickaxe: 65
+    diamond_axe: 65
+    diamond_shovel: 65
+    diamond_hoe: 65
+    netherite_pickaxe: 65
+    netherite_axe: 178.9
+    netherite_shovel: 178.9
+    netherite_hoe: 178.9
+    flint_and_steel: 23.4
+    fishing_rod: 5
+    carrot_on_a_stick: 15
+    warped_fungus_on_a_stick: 33
+    compass: 15
+    recovery_compass: 15
+    clock: 15
+    spyglass: 25
+    map: 5
+    writable_book: 15
+    coal_ore: 15
+    deepslate_coal_ore: 15
+    iron_ore: 5.3
+    deepslate_iron_ore: 23.3
+    copper_ore: 15
+    deepslate_copper_ore: 15
+    gold_ore: 20.4
+    deepslate_gold_ore: 20.4
+    nether_gold_ore: 20.4
+    diamond_ore: 20.4
+    deepslate_diamond_ore: 30.4
+    emerald_ore: 25.7
+    deepslate_emerald_ore: 45.7
+    lapis_ore: 17.9
+    deepslate_lapis_ore: 17.9
+    redstone_ore: 15
+    deepslate_redstone_ore: 15
+    nether_quartz_ore: 15
+    ancient_debris: 99.9
+    coal: 5
+    charcoal: 10
+    raw_copper: 5
+    raw_iron: 3
+    raw_gold: 4
+    emerald: 3
+    lapis_lazuli: 5
+    diamond: 10
+    quartz: 15
+    amethyst_shard: 27
+    copper_nugget: 0.6
+    iron_nugget: 0.6
+    iron_ingot: 4.0
+    copper_ingot: 27.6
+    netherite_scrap: 99
+    netherite_ingot: 178.9
+    bone: 1.1
+    feather: 1.1
+    leather: 1.1
+    rabbit_hide: 4.1
+    resin_clump: 2.1
+    ink_sac: 2.1
+    glow_ink_sac: 3.1
+    armadillo_scute: 2.1
+    slime_ball: 1.1
+    prismarine_shard: 1.1
+    prismarine_crystals: 1.1
+    gunpowder: 3.1
+    rabbit_foot: 12.1
+    ghast_tear: 17.1
+    phantom_membrane: 14.1
+    totem_of_undying: 32.9
+    beacon: 406.9
+    goat_horn: 44
+    elytra: 999.9
+    dragon_egg: 999.9
+    blaze_rod: 68.9
+    nether_star: 132.3
+    heavy_core: 76.0
+    shulker_shell: 41.6
+    experience_bottle: 6.1
+    blaze_powder: 45.8
+    angler_pottery_sherd: 20
+    archer_pottery_sherd: 20
+    arms_up_pottery_sherd: 20
+    blade_pottery_sherd: 20
+    brewer_pottery_sherd: 20
+    burn_pottery_sherd: 20
+    danger_pottery_sherd: 20
+    flow_pottery_sherd: 20
+    explorer_pottery_sherd: 20
+    friend_pottery_sherd: 20
+    guster_pottery_sherd: 20
+    heart_pottery_sherd: 20
+    heartbreak_pottery_sherd: 20
+    howl_pottery_sherd: 20
+    miner_pottery_sherd: 20
+    mourner_pottery_sherd: 20
+    plenty_pottery_sherd: 20
+    prize_pottery_sherd: 20
+    scrape_pottery_sherd: 20
+    sheaf_pottery_sherd: 20
+    shelter_pottery_sherd: 20
+    skull_pottery_sherd: 20
+    snort_pottery_sherd: 20
+    field_masoned_banner_pattern: 34.7
+    bordure_indented_banner_pattern: 34.7
+    flower_banner_pattern: 34.7
+    creeper_banner_pattern: 34.7
+    skull_banner_pattern: 34.7
+    mojang_banner_pattern: 34.7
+    globe_banner_pattern: 34.7
+    piglin_banner_pattern: 34.7
+    flow_banner_pattern: 34.7
+    guster_banner_pattern: 34.7
+    white_dye: 1
+    light_gray_dye: 1
+    gray_dye: 1
+    black_dye: 1
+    brown_dye: 6
+    red_dye: 1
+    orange_dye: 2
+    yellow_dye: 1
+    lime_dye: 4
+    green_dye: 7
+    cyan_dye: 6
+    light_blue_dye: 2
+    blue_dye: 2
+    purple_dye: 1
+    magenta_dye: 2
+    pink_dye: 1.9
+    oak_sapling: 23
+    spruce_sapling: 29.7
+    birch_sapling: 29.7
+    jungle_sapling: 29.7
+    acacia_sapling: 29.7
+    dark_oak_sapling: 29.7
+    cherry_sapling: 34.1
+    pale_oak_sapling: 34.1
+    mangrove_propagule: 29.7
+    azalea: 44
+    flowering_azalea: 44
+    wheat_seeds: 6.1
+    pumpkin_seeds: 6.1
+    melon_seeds: 6.1
+    beetroot_seeds: 10.1
+    torchflower_seeds: 6.1
+    pitcher_pod: 23.5
+    cocoa_beans: 15.8
+    moss_block: 23.9
+    moss_carpet: 10.1
+    pale_moss_block: 23.9
+    pale_moss_carpet: 10.1
+    pale_hanging_moss: 10.1
+    mushroom_stem: 15.7
+    oak_leaves: 11.4
+    spruce_leaves: 11.4
+    birch_leaves: 11.4
+    jungle_leaves: 11.4
+    acacia_leaves: 11.4
+    dark_oak_leaves: 11.4
+    mangrove_leaves: 11.4
+    cherry_leaves: 11.4
+    pale_oak_leaves: 11.4
+    azalea_leaves: 11.4
+    flowering_azalea_leaves: 11.4
+    brown_mushroom_block: 15.7
+    red_mushroom_block: 15.7
+    nether_wart_block: 15.7
+    warped_wart_block: 15.7
+    shroomlight: 18.7
+    brown_mushroom: 15.7
+    red_mushroom: 15.7
+    crimson_fungus: 15.7
+    warped_fungus: 15.7
+    short_grass: 2.7
+    fern: 2.7
+    short_dry_grass: 2.7
+    bush: 2.7
+    dead_bush: 2.0
+    dandelion: 15.7
+    poppy: 15.7
+    blue_orchid: 15.7
+    allium: 15.7
+    azure_bluet: 15.7
+    red_tulip: 15.7
+    orange_tulip: 15.7
+    white_tulip: 15.7
+    pink_tulip: 15.7
+    oxeye_daisy: 15.7
+    cornflower: 15.7
+    lily_of_the_valley: 15.7
+    torchflower: 15.7
+    cactus_flower: 15.7
+    closed_eyeblossom: 15.7
+    open_eyeblossom: 15.7
+    wither_rose: 15.7
+    pink_petals: 15.7
+    wild_flowers: 15.7
+    leaf_litter: 15.7
+    spore_blossom: 15.7
+    firefly_bush: 15.7
+    bamboo: 5.7
+    sugar_cane: 5.7
+    cactus: 5.7
+    crimson_roots: 15.7
+    warped_roots: 15.7
+    nether_sprouts: 15.7
+    weeping_vines: 15.7
+    twisting_vines: 15.7
+    vine: 15.7
+    tall_grass: 5.7
+    large_fern: 5.7
+    tall_dry_grass: 5.7
+    sunflower: 15.7
+    lilac: 15.7
+    rose_bush: 15.7
+    peony: 15.7
+    pitcher_plant: 15.7
+    big_dripleaf: 15.7
+    small_dripleaf: 15.7
+    chorus_plant: 15.7
+    chorus_flower: 75.7
+    glow_lichen: 15.7
+    hanging_roots: 15.7
+    glow_berries: 0.1
+    sweet_berries: 5.7
+    nether_wart: 15.7
+    lily_pad: 2.7
+    seagrass: 5.7
+    sea_pickle: 5.7
+    kelp: 9.7
+    dried_kelp_block: 15.7
+    melon: 20
+    pumpkin: 20
+    carved_pumpkin: 14
+    jack_o_lantern: 20
+    hay_block: 20
+    netherite_upgrade_smithing_template: 67.8
+    sentry_armor_trim_smithing_template: 23.5
+    vex_armor_trim_smithing_template: 23.5
+    wild_armor_trim_smithing_template: 23.5
+    coast_armor_trim_smithing_template: 23.5
+    dune_armor_trim_smithing_template: 23.5
+    wayfinder_armor_trim_smithing_template: 23.5
+    raiser_armor_trim_smithing_template: 23.5
+    shaper_armor_trim_smithing_template: 23.5
+    host_armor_trim_smithing_template: 23.5
+    ward_armor_trim_smithing_template: 23.5
+    silence_armor_trim_smithing_template: 23.5
+    tide_armor_trim_smithing_template: 23.5
+    snout_armor_trim_smithing_template: 23.5
+    rib_armor_trim_smithing_template: 23.5
+    eye_armor_trim_smithing_template: 23.5
+    spire_armor_trim_smithing_template: 23.5
+    flow_armor_trim_smithing_template: 23.5
+    bolt_armor_trim_smithing_template: 23.5
+    trial_key: 14.9
+    ominous_trial_key: 15.9
     # Add more materials as needed
   # Price per enchantment level for enchanted items
   # If an enchantment is not listed, uses default price of 10.0
@@ -304,7 +864,7 @@ sand-loot:
   # Loot generation mode:
   #   "simple"  - Use simple material names (e.g., STICK, DIAMOND)
   #   "complex" - Use ItemStack strings (from /paper dumpitem command)
-  enabled: false
+  enabled: true
   mode: "simple"
   # List of loot items to spawn in suspicious blocks
   # In simple mode: just material names

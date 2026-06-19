@@ -1,0 +1,84 @@
+# ==============================================
+# FISHING MINI-EVENTS
+# ==============================================
+
+# Boss fish event: chance to catch a powerful fish that fights back.
+boss-fish:
+  enabled: true
+  # Probability per fish catch (0.0 - 1.0). 0.03 = 3%
+  chance: 0.03
+  health-min: 70.0
+  health-max: 120.0
+  # Random lunge interval range in ticks (60-80 ticks = 3-4 seconds)
+  lunge-interval-min-ticks: 60
+  lunge-interval-max-ticks: 80
+  # Horizontal lunge speed (blocks/tick). Arc height is calculated from this + distance.
+  steer-strength: 0.55
+  # Damage dealt to nearby players on each natural fish jump (1 heart = 2.0)
+  natural-jump-damage: 2.0
+  natural-jump-damage-radius: 3.0
+  # Damage dealt to players within radius on landing (detected via fall damage event)
+  jump-damage: 1.5
+  jump-damage-radius: 2.5
+  # Number of falling block debris spawned on impact
+  impact-falling-block-count: 8
+  # BossBar visibility radius in blocks
+  bossbar-radius: 30.0
+  # BossBar color: RED, BLUE, GREEN, YELLOW, PURPLE, WHITE, PINK
+  bossbar-color: RED
+  # BossBar style: SOLID, SEGMENTED_6, SEGMENTED_10, SEGMENTED_12, SEGMENTED_20
+  bossbar-style: SEGMENTED_6
+  # Ticks before boss despawns (1200 = 60 seconds)
+  despawn-ticks: 1200
+  # Reward on kill
+  reward:
+    # Rarity of the guaranteed fish drop (must match rarities in config.yml)
+    drop-rarities:
+      - legendary
+      - unique
+    # Size tier of the guaranteed fish drop (must match sizes in config.yml)
+    drop-size-tiers:
+      - tier3
+      - tier4
+      - tier5
+    # XP levels given to the killer
+    bonus-xp-levels: 5
+    # Secondary coral/ocean loot: random items alongside the fish
+    secondary-loot:
+      count-min: 1
+      count-max: 3
+      items:
+        - TUBE_CORAL_BLOCK
+        - BRAIN_CORAL_BLOCK
+        - BUBBLE_CORAL_BLOCK
+        - FIRE_CORAL_BLOCK
+        - HORN_CORAL_BLOCK
+        - TUBE_CORAL_FAN
+        - BRAIN_CORAL_FAN
+        - BUBBLE_CORAL_FAN
+        - FIRE_CORAL_FAN
+        - HORN_CORAL_FAN
+        - NAUTILUS_SHELL
+        - PRISMARINE_CRYSTALS
+        - HEART_OF_THE_SEA
+  # Random boss name = one prefix + space + one suffix
+  prefixes:
+    - "Mega"
+    - "Big"
+    - "Giant"
+    - "Enormous"
+    - "Ancient"
+    - "Cursed"
+  suffixes:
+    - "Joe"
+    - "London"
+    - "Terry"
+    - "Boris"
+    - "Dave"
+    - "Rex"
+
+# Monster boost: caught monsters get bonus HP multiplier.
+monster-boost:
+  enabled: true
+  # New max HP = base HP * multiplier
+  health-multiplier: 3.0
