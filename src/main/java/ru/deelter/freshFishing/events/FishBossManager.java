@@ -175,7 +175,7 @@ public class FishBossManager implements Listener {
     public void onBossDamage(@NonNull EntityDamageEvent event) {
         if (!activeBosses.containsKey(event.getEntity().getUniqueId())) return;
         DamageType type = event.getDamageSource().getDamageType();
-        if (type == DamageType.FALL || type == DamageType.DRYOUT) {
+        if (type == DamageType.FALL || type == DamageType.DRY_OUT) {
             event.setCancelled(true);
         }
     }
