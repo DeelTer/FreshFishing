@@ -1,5 +1,5 @@
 name: FreshFishing
-version: '2.0'
+version: '3.0'
 main: ru.deelter.freshFishing.FreshFishing
 api-version: '1.21'
 authors: [ DeelTer ]
