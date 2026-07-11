@@ -45,6 +45,7 @@ public class FishBaitListener implements Listener {
     }
 
     private boolean hasBait(Player player) {
+        if (requiredBaits.isEmpty()) return true;
         for (ItemStack bait : requiredBaits) {
             int amount = 0;
             for (ItemStack content : player.getInventory().getContents()) {
