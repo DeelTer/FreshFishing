@@ -1,10 +1,12 @@
 package ru.deelter.freshFishing.listeners;
 
+import com.destroystokyo.paper.MaterialSetTag;
 import io.papermc.paper.datacomponent.DataComponentTypes;
 import net.kyori.adventure.text.Component;
 import net.milkbowl.vault2.economy.Economy;
 import org.apache.commons.lang3.tuple.Pair;
 import org.bukkit.Bukkit;
+import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -92,7 +94,7 @@ public class FishSaleListener implements Listener {
 						player.getName(),
 						total,
 						formatItemsString(inv)
-						));
+				));
 
 				economy.deposit(FreshFishing.getInstance().getName(), player.getUniqueId(), BigDecimal.valueOf(total));
 				if (config.getSaleSound() != null) {
@@ -241,9 +243,21 @@ public class FishSaleListener implements Listener {
 
 	private double calculateEnchantBonus(@NonNull ItemStack item) {
 		double bonus = 0;
-		for (var ench : item.getEnchantments().entrySet()) {
-			double price = config.getEnchantmentPrices().getOrDefault(ench.getKey(), 10.0);
-			bonus += price * ench.getValue();
+		Material type = item.getType();
+		if (!(MaterialSetTag.ITEMS_AXES.isTagged(type)
+				|| MaterialSetTag.ITEMS_PICKAXES.isTagged(type)
+				|| MaterialSetTag.ITEMS_SHOVELS.isTagged(type)
+				|| MaterialSetTag.ITEMS_HOES.isTagged(type)
+				|| MaterialSetTag.ITEMS_ENCHANTABLE_WEAPON.isTagged(type)
+				|| Material.ENCHANTED_BOOK == type
+				|| Material.FISHING_ROD == type
+				|| Material.ELYTRA == type
+				|| MaterialSetTag.ITEMS_ENCHANTABLE_ARMOR.isTagged(type))) {
+			return bonus;
+		}
+		for (var enchantment : item.getEnchantments().entrySet()) {
+			double price = config.getEnchantmentPrices().getOrDefault(enchantment.getKey(), 10.0);
+			bonus += price * enchantment.getValue();
 		}
 		return bonus;
 	}
