@@ -2,6 +2,7 @@ package ru.deelter.freshFishing.listeners;
 
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.MiniMessage;
+import org.bukkit.entity.Item;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -10,6 +11,7 @@ import org.bukkit.event.player.PlayerFishEvent;
 import org.bukkit.inventory.ItemStack;
 import ru.deelter.freshFishing.FreshFishing;
 import ru.deelter.freshFishing.config.FreshFishingConfig;
+import ru.deelter.freshFishing.utils.FishUtil;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -35,10 +37,13 @@ public class FishBaitListener implements Listener {
     public void onPlayerFish(PlayerFishEvent event) {
         if (event.getState() != PlayerFishEvent.State.CAUGHT_FISH) return;
         if (requiredBaits.isEmpty()) return;
+        if (event.getHook().getHookedEntity() instanceof Item item && FishUtil.isFish(item.getItemStack())) return;
 
         Player player = event.getPlayer();
         if (!hasBait(player)) {
-            if (noBaitMessage != null) player.sendActionBar(noBaitMessage);
+            if (noBaitMessage != null) {
+                player.sendActionBar(noBaitMessage);
+            }
             event.setCancelled(true);
             event.getHook().remove();
         }
