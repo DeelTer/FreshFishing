@@ -96,6 +96,15 @@
             <version>3.2.1</version>
             <scope>compile</scope>
         </dependency>
+        <!-- Soft dependency: emote triggers. Local jar because BetterEmotes is a Gradle project
+             with no published artifact; provided, so it is never bundled. -->
+        <dependency>
+            <groupId>ru.deelter</groupId>
+            <artifactId>BetterEmotes</artifactId>
+            <version>1.0.0</version>
+            <scope>system</scope>
+            <systemPath>${project.basedir}/../BetterEmotes/build/libs/BetterEmotes-1.0.0.jar</systemPath>
+        </dependency>
         <dependency>
             <groupId>net.milkbowl.vault</groupId>
             <artifactId>VaultUnlockedAPI</artifactId>

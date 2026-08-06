@@ -1,7 +1,10 @@
 package ru.deelter.freshFishing.listeners;
 
+import io.papermc.paper.datacomponent.DataComponentTypes;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.block.Block;
+import org.bukkit.block.data.Waterlogged;
 import org.bukkit.Particle;
 import org.bukkit.Sound;
 import org.bukkit.block.BlockFace;
@@ -13,7 +16,9 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerFishEvent;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.util.Vector;
+import org.jetbrains.annotations.Nullable;
 import org.jspecify.annotations.NonNull;
 import ru.deelter.freshFishing.FreshFishing;
 import ru.deelter.freshFishing.config.FreshFishingConfig;
@@ -37,6 +42,7 @@ public class GrapplingHookListener implements Listener {
 	private final double velocityMultiplier;
 
 	private final boolean wallGrappleEnabled;
+	private final boolean wallGrappleConsumesDurability;
 	private final int grapplingCooldownTicks;
 
 	public GrapplingHookListener(FreshFishing plugin) {
@@ -55,9 +61,20 @@ public class GrapplingHookListener implements Listener {
 		this.dragVertical = config.getGrapplingHookDragVertical();
 		this.velocityMultiplier = config.getGrapplingHookVelocityMultiplier();
 		this.wallGrappleEnabled = config.isGrapplingHookWallGrapple();
+		this.wallGrappleConsumesDurability = config.isGrapplingHookWallConsumesDurability();
 		this.grapplingCooldownTicks = config.getGrapplingCooldownTicks();
 
 		if (enabled) plugin.getServer().getPluginManager().registerEvents(this, plugin);
+	}
+
+	/** What the hook caught on, which decides both whether to pull and what it costs. */
+	private enum Anchor {
+		/** Nothing to grapple from — the hook is in the air or floating in water. */
+		NONE,
+		/** Solid ground under the hook. */
+		GROUND,
+		/** A solid block beside the hook. */
+		WALL
 	}
 
 	@EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
@@ -67,26 +84,83 @@ public class GrapplingHookListener implements Listener {
 
 		FishHook hook = event.getHook();
 		if (hook.getHookedEntity() != null) return;
-		if (!isHookOnGround(hook)) return;
+
+		Anchor anchor = anchorOf(hook);
+		if (anchor == Anchor.NONE) return;
 
 		Player player = event.getPlayer();
 		pullEntity(player, hook.getLocation(), pullStrength);
 		playEffects(player.getLocation(), hook.getLocation());
 		applyCooldown(player);
+
+		// Climbing a wall is the one grapple that costs no durability: a wall run is many short
+		// hops, and charging for each of them wears a rod out in a single climb. Ground pulls
+		// still cost, so long-distance travel is not free.
+		if (anchor == Anchor.WALL && !wallGrappleConsumesDurability) {
+			refundRodDurability(player);
+		}
 	}
 
-	private boolean isHookOnGround(@NonNull FishHook hook) {
-		if (hook.isOnGround()) return true;
+	/**
+	 * Where the hook is anchored.
+	 *
+	 * <p>Water beats everything: a bobber sitting in water is <b>fishing</b>, not grappling. Without
+	 * that check a waterlogged slab (or any water with a solid block under it) read as ground, and
+	 * casting into shallow water yanked the player instead of catching anything — which made
+	 * fishing in a half-block of water impossible.</p>
+	 */
+	private @NonNull Anchor anchorOf(@NonNull FishHook hook) {
+		if (isInWater(hook)) return Anchor.NONE;
 
-		Location loc = hook.getLocation().clone();
-		if (loc.subtract(0, 0.1, 0).getBlock().getType().isSolid()) return true;
+		if (hook.isOnGround()) return Anchor.GROUND;
+
+		Location below = hook.getLocation().clone().subtract(0, 0.1, 0);
+		if (below.getBlock().getType().isSolid()) return Anchor.GROUND;
 
 		if (wallGrappleEnabled) {
 			for (BlockFace face : new BlockFace[]{BlockFace.NORTH, BlockFace.SOUTH, BlockFace.EAST, BlockFace.WEST}) {
-				if (hook.getLocation().getBlock().getRelative(face).getType().isSolid()) return true;
+				if (hook.getLocation().getBlock().getRelative(face).getType().isSolid()) return Anchor.WALL;
 			}
 		}
-		return false;
+		return Anchor.NONE;
+	}
+
+	/**
+	 * True if the bobber is floating in water — including a waterlogged block such as a slab,
+	 * stairs or a fence, where the block itself is solid but the bobber is in the water inside it.
+	 */
+	private boolean isInWater(@NonNull FishHook hook) {
+		if (hook.isInWater()) return true;
+
+		Block block = hook.getLocation().getBlock();
+		if (block.getType() == Material.WATER) return true;
+		return block.getBlockData() instanceof Waterlogged waterlogged && waterlogged.isWaterlogged();
+	}
+
+	/**
+	 * Gives back the durability point vanilla takes for retrieving the rod.
+	 *
+	 * <p>Deferred a tick because the damage is applied by the retrieve that fires this event, so
+	 * repairing during the event would be overwritten a moment later. Repairing rather than
+	 * cancelling keeps this independent of where in the retrieve the damage happens.</p>
+	 */
+	private void refundRodDurability(@NonNull Player player) {
+		FreshFishing.getInstance().getServer().getScheduler().runTask(
+				FreshFishing.getInstance(), () -> {
+					ItemStack rod = rodInHand(player);
+					if (rod == null || !rod.hasData(DataComponentTypes.DAMAGE)) return;
+					int damage = rod.getData(DataComponentTypes.DAMAGE);
+					if (damage <= 0) return;
+					rod.setData(DataComponentTypes.DAMAGE, damage - 1);
+				});
+	}
+
+	/** The fishing rod the player is holding, main hand first. Null if they swapped it away. */
+	private @Nullable ItemStack rodInHand(@NonNull Player player) {
+		ItemStack main = player.getInventory().getItemInMainHand();
+		if (main.getType() == Material.FISHING_ROD) return main;
+		ItemStack off = player.getInventory().getItemInOffHand();
+		return off.getType() == Material.FISHING_ROD ? off : null;
 	}
 
 	private void applyCooldown(@NonNull Player player) {

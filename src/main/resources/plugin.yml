@@ -7,6 +7,8 @@ website: https://t.me/deelter
 softdepend:
   - Vault
   - VaultUnlocked
+  # Emote triggers: players bind an emote to "caught a fish" / "fished up an item".
+  - BetterEmotes
 
 commands:
   fish:

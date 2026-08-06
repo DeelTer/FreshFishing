@@ -830,6 +830,10 @@ grappling-hook:
   enabled: true
   # Allow hook to grapple walls (checks adjacent solid blocks when reeling in)
   wall-grapple: true
+  # Whether a wall grapple costs rod durability. Off by default: climbing a wall is many short
+  # hops, and charging for each one wears a rod out in a single climb. Ground pulls always cost,
+  # so long-distance travel is still not free.
+  wall-grapple-consumes-durability: false
   # Cooldown in ticks after grappling (-1 to disable)
   cooldown-ticks: 40
   # How strongly the player is pulled toward the hook location (when hook hits ground)
