@@ -97,7 +97,7 @@ public class GrapplingHookListener implements Listener {
 		// hops, and charging for each of them wears a rod out in a single climb. Ground pulls
 		// still cost, so long-distance travel is not free.
 		if (anchor == Anchor.WALL && !wallGrappleConsumesDurability) {
-			refundRodDurability(player);
+			keepRodDurability(player);
 		}
 	}
 
@@ -138,20 +138,31 @@ public class GrapplingHookListener implements Listener {
 	}
 
 	/**
-	 * Gives back the durability point vanilla takes for retrieving the rod.
+	 * Holds the rod's durability at whatever it was before this grapple.
 	 *
-	 * <p>Deferred a tick because the damage is applied by the retrieve that fires this event, so
-	 * repairing during the event would be overwritten a moment later. Repairing rather than
-	 * cancelling keeps this independent of where in the retrieve the damage happens.</p>
+	 * <p>Reads the damage now, then a tick later puts that value back — but <b>only if it went
+	 * up</b>. The obvious version, subtracting one afterwards, was a repair bench: vanilla charges
+	 * different amounts for different retrieves and sometimes nothing at all, so on any retrieve it
+	 * did not charge for, the subtraction healed the rod. Wall-hopping a damaged rod slowly made it
+	 * new. Restoring a snapshot can only ever undo an increase, so the worst case is "no change".</p>
+	 *
+	 * <p>Deferred a tick because the damage is applied by the same retrieve that fires this event;
+	 * writing during the event would be overwritten a moment later.</p>
 	 */
-	private void refundRodDurability(@NonNull Player player) {
+	private void keepRodDurability(@NonNull Player player) {
+		ItemStack before = rodInHand(player);
+		if (before == null || !before.hasData(DataComponentTypes.DAMAGE)) return;
+		final int damageBefore = before.getData(DataComponentTypes.DAMAGE);
+
 		FreshFishing.getInstance().getServer().getScheduler().runTask(
 				FreshFishing.getInstance(), () -> {
 					ItemStack rod = rodInHand(player);
 					if (rod == null || !rod.hasData(DataComponentTypes.DAMAGE)) return;
-					int damage = rod.getData(DataComponentTypes.DAMAGE);
-					if (damage <= 0) return;
-					rod.setData(DataComponentTypes.DAMAGE, damage - 1);
+					// Strictly greater: never write a lower value than the rod already has, or a
+					// player who swapped rods within the tick would get the other one repaired.
+					if (rod.getData(DataComponentTypes.DAMAGE) > damageBefore) {
+						rod.setData(DataComponentTypes.DAMAGE, damageBefore);
+					}
 				});
 	}
 
