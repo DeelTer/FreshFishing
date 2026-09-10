@@ -30,6 +30,9 @@ public class EventsConfig {
     private int impactFallingBlockCount;
     private double naturalJumpDamage;
     private double naturalJumpDamageRadius;
+    private double screenShakeRadius;
+    private String leapShakePreset;
+    private String impactShakePreset;
     private double bossbarRadius;
     private BarColor bossbarColor;
     private BarStyle bossbarStyle;
@@ -70,6 +73,9 @@ public class EventsConfig {
         impactFallingBlockCount = cfg.getInt("boss-fish.impact-falling-block-count", 8);
         naturalJumpDamage = cfg.getDouble("boss-fish.natural-jump-damage", 2.0);
         naturalJumpDamageRadius = cfg.getDouble("boss-fish.natural-jump-damage-radius", 3.0);
+        screenShakeRadius = cfg.getDouble("boss-fish.screen-shake.radius", 16.0);
+        leapShakePreset = cfg.getString("boss-fish.screen-shake.jump-preset", "fishing_boss_jump");
+        impactShakePreset = cfg.getString("boss-fish.screen-shake.impact-preset", "fishing_boss_impact");
         bossbarRadius = cfg.getDouble("boss-fish.bossbar-radius", 30.0);
         despawnTicks = cfg.getInt("boss-fish.despawn-ticks", 1200);
         bossPrefixes = cfg.getStringList("boss-fish.prefixes");

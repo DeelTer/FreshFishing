@@ -24,6 +24,7 @@ import ru.deelter.freshFishing.FreshFishing;
 import ru.deelter.freshFishing.config.EventsConfig;
 import ru.deelter.freshFishing.data.FishRarity;
 import ru.deelter.freshFishing.data.FishSize;
+import ru.deelter.freshFishing.hook.ScreenEffects;
 import ru.deelter.freshFishing.utils.AttributeUtils;
 import ru.deelter.freshFishing.utils.FishUtil;
 
@@ -154,6 +155,7 @@ public class FishBossManager implements Listener {
 				entity.setVelocity(velocity);
 			}, i);
 		}
+		ScreenEffects.playPresetNearby(from, config.getScreenShakeRadius(), config.getLeapShakePreset());
 
 		long impactDelay = Math.max(15L, (long) (t * 0.9));
 		Bukkit.getScheduler().runTaskLater(plugin, () -> {
@@ -176,6 +178,7 @@ public class FishBossManager implements Listener {
 		Location loc = entity.getLocation();
 
 		dealImpactDamage(entity, loc);
+		ScreenEffects.playPresetNearby(loc, config.getScreenShakeRadius(), config.getImpactShakePreset());
 		spawnImpactParticles(loc);
 		spawnFallingBlocks(loc);
 	}
@@ -260,6 +263,7 @@ public class FishBossManager implements Listener {
 	public void onBossJump(@NonNull EntityJumpEvent event) {
 		if (!activeBosses.containsKey(event.getEntity().getUniqueId())) return;
 		LivingEntity entity = (LivingEntity) event.getEntity();
+		ScreenEffects.playPresetNearby(entity.getLocation(), config.getScreenShakeRadius(), config.getLeapShakePreset());
 		double r = config.getNaturalJumpDamageRadius();
 		for (Entity nearby : entity.getNearbyEntities(r, r, r)) {
 			if (nearby instanceof Player player) {

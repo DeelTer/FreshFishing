@@ -859,6 +859,8 @@ grappling-hook:
   drag-horizontal: 0.07
   drag-vertical: 0.03
   velocity-multiplier: 1.0
+  # BetterEffects preset played when the player is pulled (optional plugin; "" = none)
+  screen-effect: "fishing_grapple"
 
 # ==============================================
 # SAND LOOT (Suspicious Sand/Gravel)

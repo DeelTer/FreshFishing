@@ -22,6 +22,7 @@ import org.jetbrains.annotations.Nullable;
 import org.jspecify.annotations.NonNull;
 import ru.deelter.freshFishing.FreshFishing;
 import ru.deelter.freshFishing.config.FreshFishingConfig;
+import ru.deelter.freshFishing.hook.ScreenEffects;
 import ru.deelter.freshFishing.utils.PhysicsUtils;
 
 public class GrapplingHookListener implements Listener {
@@ -44,6 +45,7 @@ public class GrapplingHookListener implements Listener {
 	private final boolean wallGrappleEnabled;
 	private final boolean wallGrappleConsumesDurability;
 	private final int grapplingCooldownTicks;
+	private final String screenEffect;
 
 	public GrapplingHookListener(FreshFishing plugin) {
 		FreshFishingConfig config = plugin.getConfigManager();
@@ -63,6 +65,7 @@ public class GrapplingHookListener implements Listener {
 		this.wallGrappleEnabled = config.isGrapplingHookWallGrapple();
 		this.wallGrappleConsumesDurability = config.isGrapplingHookWallConsumesDurability();
 		this.grapplingCooldownTicks = config.getGrapplingCooldownTicks();
+		this.screenEffect = config.getGrapplingScreenEffect();
 
 		if (enabled) plugin.getServer().getPluginManager().registerEvents(this, plugin);
 	}
@@ -91,6 +94,7 @@ public class GrapplingHookListener implements Listener {
 		Player player = event.getPlayer();
 		pullEntity(player, hook.getLocation(), pullStrength);
 		playEffects(player.getLocation(), hook.getLocation());
+		ScreenEffects.playPreset(player, screenEffect);
 		applyCooldown(player);
 
 		// Climbing a wall is the one grapple that costs no durability: a wall run is many short
@@ -195,6 +199,7 @@ public class GrapplingHookListener implements Listener {
 		} else {
 			if (entityHigher) {
 				pullEntity(player, hookedRef, pullStrength);
+				ScreenEffects.playPreset(player, screenEffect);
 			} else {
 				pullEntity(hooked, playerRef, pullEntityStrength);
 			}

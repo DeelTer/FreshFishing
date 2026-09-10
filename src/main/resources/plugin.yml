@@ -9,6 +9,8 @@ softdepend:
   - VaultUnlocked
   # Emote triggers: players bind an emote to "caught a fish" / "fished up an item".
   - BetterEmotes
+  # Screen effects: speed lines on grapple, screen shake from boss fish.
+  - BetterEffects
 
 commands:
   fish:

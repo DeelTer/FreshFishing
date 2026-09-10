@@ -22,6 +22,14 @@ boss-fish:
   jump-damage-radius: 4
   # Number of falling block debris spawned on impact
   impact-falling-block-count: 8
+  # Screen shake through the optional BetterEffects plugin. Players within the radius feel it,
+  # weaker with distance. Preset names come from BetterEffects' config.yml; "" = none.
+  screen-shake:
+    radius: 16.0
+    # Boss leaps (lunges and natural jumps)
+    jump-preset: "fishing_boss_jump"
+    # Boss lands
+    impact-preset: "fishing_boss_impact"
   # BossBar visibility radius in blocks
   bossbar-radius: 30.0
   # BossBar color: RED, BLUE, GREEN, YELLOW, PURPLE, WHITE, PINK

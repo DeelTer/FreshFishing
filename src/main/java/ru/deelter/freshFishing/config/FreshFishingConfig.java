@@ -70,6 +70,7 @@ public class FreshFishingConfig {
     private double grapplingHookDragHorizontal;
     private double grapplingHookDragVertical;
     private double grapplingHookVelocityMultiplier;
+    private String grapplingScreenEffect;
     private double pullStrength;
     private double pullEntityStrength;
     private Sound hookSound;
@@ -257,6 +258,7 @@ public class FreshFishingConfig {
         grapplingHookDragHorizontal = config.getDouble("grappling-hook.drag-horizontal", 0.07);
         grapplingHookDragVertical = config.getDouble("grappling-hook.drag-vertical", 0.03);
         grapplingHookVelocityMultiplier = config.getDouble("grappling-hook.velocity-multiplier", 1.0);
+        grapplingScreenEffect = config.getString("grappling-hook.screen-effect", "fishing_grapple");
         pullStrength = config.getDouble("grappling-hook.pull-strength", 1.0);
         pullEntityStrength = config.getDouble("grappling-hook.pull-entity-strength", 1.0);
         hookSound = getSoundSafe(config.getString("grappling-hook.hook-sound", "entity.wind_charge.wind_burst"), Sound.ENTITY_WIND_CHARGE_WIND_BURST);
