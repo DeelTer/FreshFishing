@@ -19,7 +19,7 @@ FreshFishing transforms vanilla fishing into a rewarding progression system. Eve
 
 🪝 **Grappling Hooks** – Use your fishing rod to swing off walls, grapple entities, or pull yourself toward high ground. Perfect for parkour and exploration.
 
-🦠 **Bait System** – Require specific items (spider eyes, bread, etc.) to fish. Optional consumption. Great for gating fishing early-game.
+🦠 **Bait System** – Optional: hold food in the off hand and the catch gets bigger, by a configurable percent per hunger point the food restores. Optional consumption.
 
 🏜️ **Sand Loot** – Place markers to auto-populate suspicious sand/gravel blocks with custom loot tables.
 

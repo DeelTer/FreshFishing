@@ -73,8 +73,8 @@ public class FishMetrics {
 
 		// Bait system enabled?
 		metrics.addCustomChart(new SimplePie("bait_enabled", () -> {
-			boolean hasBaits = !config.getStringList("bait.required-items").isEmpty();
-			return hasBaits ? "enabled" : "disabled";
+			boolean enabled = config.getDouble("bait.size-bonus-per-nutrition", 2.0) > 0;
+			return enabled ? "enabled" : "disabled";
 		}));
 
 		// Bait consume on catch?

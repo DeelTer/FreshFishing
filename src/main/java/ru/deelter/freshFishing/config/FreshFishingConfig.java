@@ -11,7 +11,6 @@ import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.EntityType;
 import org.bukkit.inventory.ItemStack;
-import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
 import ru.deelter.freshFishing.FreshFishing;
 import ru.deelter.freshFishing.data.FishRarity;
@@ -56,9 +55,8 @@ public class FreshFishingConfig {
     private final Map<Material, Double> trashPrices = new HashMap<>();
     private final Map<Enchantment, Double> enchantmentPrices = new HashMap<>();
 
-    private final List<ItemStack> requiredBaits = new ArrayList<>();
+    private double baitSizeBonusPerNutrition;
     private boolean consumeBaitOnCatch;
-    private String noBaitActionBar;
 
     private boolean grapplingHookEnabled;
     private boolean grapplingHookWallGrapple;
@@ -237,14 +235,8 @@ public class FreshFishingConfig {
         }
 
         // === BAIT ===
-        requiredBaits.clear();
-        List<String> baitItems = config.getStringList("bait.required-items");
-        for (String itemStr : baitItems) {
-            ItemStack bait = parseBaitItem(itemStr);
-            if (bait != null) requiredBaits.add(bait);
-        }
+        baitSizeBonusPerNutrition = config.getDouble("bait.size-bonus-per-nutrition", 2.0);
         consumeBaitOnCatch = config.getBoolean("bait.consume-on-catch", true);
-        noBaitActionBar = config.getString("bait.no-bait-action-bar", "");
 
         // === GRAPPLING HOOK ===
         grapplingHookEnabled = config.getBoolean("grappling-hook.enabled", true);
@@ -305,15 +297,6 @@ public class FreshFishingConfig {
         } catch (Exception ignored) {
         }
         return null;
-    }
-
-    private ItemStack parseBaitItem(@NonNull String s) {
-        try {
-            Material material = Material.valueOf(s.toUpperCase());
-            return new ItemStack(material);
-        } catch (IllegalArgumentException e) {
-            return ItemStackParser.parseItemString(s);
-        }
     }
 
     private Sound getSoundSafe(String soundName, Sound fallback) {

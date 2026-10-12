@@ -6,7 +6,7 @@
 
     <groupId>ru.deelter.vr</groupId>
     <artifactId>FreshFishing</artifactId>
-    <version>3.0</version>
+    <version>3.1</version>
     <packaging>jar</packaging>
 
     <name>freshfishing</name>

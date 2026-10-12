@@ -804,22 +804,16 @@ sale-shop:
 # ==============================================
 # BAIT SYSTEM
 # ==============================================
-# Players need specific items in their inventory to fish.
+# Bait is optional. Any edible item held in the OFF HAND while fishing makes the caught fish bigger.
+# Only the off hand is checked; the rest of the inventory is never searched or touched.
 bait:
-  # List of required bait items (case-insensitive material names)
-  # Supports simple materials (SPIDER_EYE) or complex ItemStack strings
-  # If list is empty, bait system is disabled entirely
-  required-items:
-    - SPIDER_EYE
-    - BREAD
-    # Complex ItemStack example (from /paper dumpitem):
-    # - "minecraft:gold_nugget[custom_model_data=100]"
-  # Whether to consume ONE bait item from inventory when fish is caught
-  # If false, bait is required but not consumed
+  # Fish size bonus in percent per hunger point the bait restores (nutrition, not saturation)
+  # Example: bread restores 5 hunger points, so at 2.0 the fish is 10% bigger
+  # The result is capped at the largest "max" under "sizes". Set to 0 to disable the bait system.
+  size-bonus-per-nutrition: 2.0
+  # Whether to consume ONE bait item from the off hand when a fish is caught
+  # If false, the bait gives its bonus but is not consumed
   consume-on-catch: true
-  # Action bar message shown when player tries to fish without required bait
-  # Supports MiniMessage format. Set to "" to disable the message.
-  no-bait-action-bar: "<red>You need bait to fish!"
 
 # ==============================================
 # GRAPPLING HOOK

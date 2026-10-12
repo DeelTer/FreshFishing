@@ -2,6 +2,7 @@ package ru.deelter.freshFishing.listeners;
 
 import io.papermc.paper.datacomponent.DataComponentType;
 import io.papermc.paper.datacomponent.DataComponentTypes;
+import io.papermc.paper.datacomponent.item.FoodProperties;
 import org.bukkit.damage.DamageType;
 import org.bukkit.entity.*;
 import org.bukkit.event.EventHandler;
@@ -19,6 +20,8 @@ import org.jetbrains.annotations.NotNull;
 import ru.deelter.freshFishing.FreshFishing;
 import ru.deelter.freshFishing.config.EventsConfig;
 import ru.deelter.freshFishing.config.FreshFishingConfig;
+import ru.deelter.freshFishing.data.FishRarity;
+import ru.deelter.freshFishing.data.FishSize;
 import ru.deelter.freshFishing.events.FishBossManager;
 import ru.deelter.freshFishing.utils.FishUtil;
 import ru.deelter.freshFishing.utils.ProbabilityCollection;
@@ -28,6 +31,8 @@ public class EntityFishListener implements Listener {
 	private final ProbabilityCollection<EntityType> possibleEntities;
 	private final double vectorMultiply, vectorX, vectorY, vectorZ;
 	private final int fishConsumeDamage;
+	private final double baitSizeBonusPerNutrition;
+	private final boolean consumeBaitOnCatch;
 	private final FishBossManager bossManager;
 	private final EventsConfig eventsConfig;
 
@@ -39,6 +44,8 @@ public class EntityFishListener implements Listener {
 		this.vectorY = config.getVectorY();
 		this.vectorZ = config.getVectorZ();
 		this.fishConsumeDamage = config.getFishConsumeDamage();
+		this.baitSizeBonusPerNutrition = config.getBaitSizeBonusPerNutrition();
+		this.consumeBaitOnCatch = config.isConsumeBaitOnCatch();
 		this.bossManager = plugin.getFishBossManager();
 		this.eventsConfig = plugin.getEventsConfig();
 		plugin.getServer().getPluginManager().registerEvents(this, plugin);
@@ -59,6 +66,10 @@ public class EntityFishListener implements Listener {
 				CreatureSpawnEvent.SpawnReason.CUSTOM
 		);
 
+		if (fishedEntity instanceof Fish fish) {
+			applyBait(player, fish);
+		}
+
 		if (fishedEntity instanceof LivingEntity living) {
 			if (eventsConfig.isMonsterBoostEnabled() && living instanceof Monster) {
 				double base = living.getAttribute(org.bukkit.attribute.Attribute.MAX_HEALTH).getBaseValue();
@@ -74,6 +85,31 @@ public class EntityFishListener implements Listener {
 				.add(new Vector(vectorX, vectorY, vectorZ))
 				.multiply(vectorMultiply);
 		fishedEntity.setVelocity(velocity);
+	}
+
+	/*
+		Bait: food in the off hand makes the caught fish bigger, by a percent per hunger point it restores
+	 */
+	private void applyBait(@NotNull Player player, @NotNull Fish fish) {
+		if (baitSizeBonusPerNutrition <= 0) return;
+
+		ItemStack bait = player.getInventory().getItemInOffHand();
+		if (bait.isEmpty()) return;
+
+		FoodProperties food = bait.getData(DataComponentTypes.FOOD);
+		if (food == null || food.nutrition() <= 0) return;
+
+		FishRarity rarity = FishUtil.getRarity(fish);
+		if (rarity == null) return;
+
+		double maxSize = FishSize.SIZES.stream().mapToDouble(FishSize::getMax).max().orElse(Double.MAX_VALUE);
+		double boosted = FishUtil.getSize(fish) * (1 + food.nutrition() * baitSizeBonusPerNutrition / 100.0);
+		double size = Math.round(Math.min(boosted, maxSize) * 100.0) / 100.0;
+		FishUtil.editFish(fish, size, rarity);
+
+		if (consumeBaitOnCatch) {
+			bait.subtract();
+		}
 	}
 
 	/*

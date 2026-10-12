@@ -21,7 +21,7 @@
 
 ### Advanced
 - 🪝 **Grappling hook** – use fishing rod to swing/pull on walls, ground, or entities
-- 🦠 **Bait system** – require specific items (spider eyes, bread, etc.) to fish
+- 🦠 **Bait system** – optional: food in the off hand makes the catch bigger, the more hunger it restores the bigger the fish
 - 📝 **Custom item lore** – show size & rarity using MiniMessage (colors, gradients)
 - 🚀 **Physics-based flight** – caught mobs launch toward player with realistic velocity
 - 🏜️ **Sand loot markers** – auto-populate suspicious sand/gravel with custom loot
@@ -114,9 +114,7 @@ grappling-hook:
 ### Bait System
 ```yaml
 bait:
-  required-items:
-    - SPIDER_EYE
-    - BREAD
+  size-bonus-per-nutrition: 2.0   # +% fish size per hunger point of the off-hand food
   consume-on-catch: true
 ```
 

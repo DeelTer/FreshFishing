@@ -39,7 +39,6 @@ public final class FreshFishing extends JavaPlugin {
 		new PlayerRestrictsListener(this);
 		new EntityFishListener(this);
 		new GrapplingHookListener(this);
-		new FishBaitListener(this);
 		new FishSaleListener(this);
 		new SandLootManager(this);
 		// Soft: registers fishing emote triggers only when BetterEmotes is installed.
