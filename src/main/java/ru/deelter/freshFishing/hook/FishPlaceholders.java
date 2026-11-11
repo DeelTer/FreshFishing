@@ -44,6 +44,7 @@ public final class FishPlaceholders {
             case "player" -> Component.text(fish.playerName());
             case "cm" -> Component.text(fish.sizeText());
             case "rarity" -> MiniMessage.miniMessage().deserialize(fish.rarityDisplay());
+            case "score" -> Component.text(fish.scoreText());
             case "value" -> Component.text(fish.valueText());
             case "place" -> Component.text(row.place());
             case "line" -> Component.text("#" + row.place() + "  ", GOLD)

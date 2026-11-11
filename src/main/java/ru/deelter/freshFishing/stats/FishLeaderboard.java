@@ -26,18 +26,19 @@ public final class FishLeaderboard implements AutoCloseable {
             CREATE TABLE IF NOT EXISTS freshfishing_records (
                 player_id VARCHAR(36) PRIMARY KEY, player_name VARCHAR(64) NOT NULL,
                 centimeters DOUBLE NOT NULL, rarity VARCHAR(255) NOT NULL,
-                rarity_display TEXT NOT NULL, score DOUBLE NOT NULL, caught_at BIGINT NOT NULL
+                rarity_display TEXT NOT NULL, market_value DOUBLE NOT NULL, score DOUBLE NOT NULL, caught_at BIGINT NOT NULL
             )
             """;
     private static final String INSERT = """
             INSERT INTO freshfishing_records
-            (player_id, player_name, centimeters, rarity, rarity_display, score, caught_at)
-            VALUES (?, ?, ?, ?, ?, ?, ?)
+            (player_id, player_name, centimeters, rarity, rarity_display, market_value, score, caught_at)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?)
             """;
     private static final String SQLITE_UPSERT = INSERT + """
             ON CONFLICT(player_id) DO UPDATE SET player_name = excluded.player_name,
                 centimeters = excluded.centimeters, rarity = excluded.rarity,
-                rarity_display = excluded.rarity_display, caught_at = excluded.caught_at, score = excluded.score
+                rarity_display = excluded.rarity_display, market_value = excluded.market_value,
+                caught_at = excluded.caught_at, score = excluded.score
             WHERE excluded.score > freshfishing_records.score
             """;
     // MySQL evaluates these assignments from left to right, so score must be assigned last.
@@ -47,6 +48,7 @@ public final class FishLeaderboard implements AutoCloseable {
                 centimeters = IF(incoming.score > freshfishing_records.score, incoming.centimeters, freshfishing_records.centimeters),
                 rarity = IF(incoming.score > freshfishing_records.score, incoming.rarity, freshfishing_records.rarity),
                 rarity_display = IF(incoming.score > freshfishing_records.score, incoming.rarity_display, freshfishing_records.rarity_display),
+                market_value = IF(incoming.score > freshfishing_records.score, incoming.market_value, freshfishing_records.market_value),
                 caught_at = IF(incoming.score > freshfishing_records.score, incoming.caught_at, freshfishing_records.caught_at),
                 score = GREATEST(freshfishing_records.score, incoming.score)
             """;
@@ -106,7 +108,7 @@ public final class FishLeaderboard implements AutoCloseable {
             try (Connection connection = open()) {
                 Snapshot before = mysql ? read(connection) : snapshot;
                 Ranked previous = before.byPlayer().get(fish.playerId());
-                if (previous != null && fish.value() <= previous.fish().value()) return;
+                if (previous != null && fish.score() <= previous.fish().score()) return;
                 try (PreparedStatement statement = connection.prepareStatement(mysql ? MYSQL_UPSERT : SQLITE_UPSERT)) {
                     statement.setString(1, fish.playerId().toString());
                     statement.setString(2, fish.playerName());
@@ -114,7 +116,8 @@ public final class FishLeaderboard implements AutoCloseable {
                     statement.setString(4, fish.rarity());
                     statement.setString(5, fish.rarityDisplay());
                     statement.setDouble(6, fish.value());
-                    statement.setLong(7, fish.caughtAt());
+                    statement.setDouble(7, fish.score());
+                    statement.setLong(8, fish.caughtAt());
                     if (statement.executeUpdate() == 0) return;
                 }
                 Snapshot after = read(connection);
@@ -123,7 +126,7 @@ public final class FishLeaderboard implements AutoCloseable {
                 if (current == null || current.place() > 5 || !current.fish().equals(fish)) return;
                 Ranked passed = before.at(current.place());
                 if (passed == null || passed.fish().playerId().equals(fish.playerId())
-                        || fish.value() <= passed.fish().value()
+                        || fish.score() <= passed.fish().score()
                         || (previous != null && current.place() >= previous.place())) return;
                 long catchRound = round;
                 onMainThread(() -> {
@@ -167,6 +170,7 @@ public final class FishLeaderboard implements AutoCloseable {
         if (!initialized) {
             try (Statement statement = connection.createStatement()) {
                 statement.executeUpdate(CREATE);
+                migrateMarketValue(connection);
                 initialized = true;
             } catch (SQLException e) {
                 connection.close();
@@ -174,6 +178,34 @@ public final class FishLeaderboard implements AutoCloseable {
             }
         }
         return connection;
+    }
+
+    private void migrateMarketValue(Connection connection) throws SQLException {
+        boolean hasMarketValue;
+        try (ResultSet columns = connection.getMetaData().getColumns(null, null, TABLE, "market_value")) {
+            hasMarketValue = columns.next();
+        }
+        
+
+        if (!hasMarketValue) try (Statement statement = connection.createStatement()) {
+            statement.executeUpdate("ALTER TABLE " + TABLE + " ADD COLUMN market_value DOUBLE NULL");
+        }
+        try (Statement statement = connection.createStatement();
+             ResultSet result = statement.executeQuery("SELECT player_id, centimeters, rarity FROM " + TABLE + " WHERE market_value IS NULL");
+             PreparedStatement update = connection.prepareStatement(
+                     "UPDATE " + TABLE + " SET market_value = score, score = ? WHERE player_id = ? AND market_value IS NULL")) {
+            while (result.next()) {
+                var rarity = ru.deelter.freshFishing.data.FishRarity.getById(result.getString("rarity"));
+                double size = result.getDouble("centimeters");
+                double score = rarity == null ? size : plugin.getConfigManager().contestScore(rarity, size);
+                update.setDouble(1, score);
+                update.setString(2, result.getString("player_id"));
+                update.addBatch();
+            }
+            if (update.executeBatch().length > 0) {
+                plugin.getLogger().info("Migrated fishing records to the rarity-weighted contest score.");
+            }
+        }
     }
 
     private void refresh() {
@@ -192,7 +224,7 @@ public final class FishLeaderboard implements AutoCloseable {
             while (result.next()) {
                 rows.add(new FishRecord(UUID.fromString(result.getString("player_id")), result.getString("player_name"),
                         result.getDouble("centimeters"), result.getString("rarity"), result.getString("rarity_display"),
-                        result.getDouble("score"), result.getLong("caught_at")));
+                        result.getDouble("market_value"), result.getDouble("score"), result.getLong("caught_at")));
             }
         }
         return Snapshot.of(rows);

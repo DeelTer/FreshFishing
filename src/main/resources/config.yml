@@ -13,6 +13,14 @@ fish-consume-damage: 20
 
 # Stores each player's best catch. Storage changes take effect on restart.
 leaderboard:
+  # Contest score = fish size in cm multiplied by this rarity's weight.
+  # These weights affect the fishing contest only. Shop prices stay unchanged.
+  rarity-weights:
+    default: 1.0
+    rare: 1.5
+    unique: 2.0
+    legendary: 3.0
+    mystery: 4.0
   storage:
     type: sqlite
     mysql:

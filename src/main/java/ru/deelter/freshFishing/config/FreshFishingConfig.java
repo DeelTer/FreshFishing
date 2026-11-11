@@ -52,6 +52,7 @@ public class FreshFishingConfig {
     private @org.jetbrains.annotations.Nullable String saleSound;
     private String saleSoundName;
     private final Map<String, FishPriceRange> fishPriceRanges = new HashMap<>();
+    private final Map<String, Double> leaderboardRarityWeights = new HashMap<>();
     private final Map<Material, Double> trashPrices = new HashMap<>();
     private final Map<Enchantment, Double> enchantmentPrices = new HashMap<>();
 
@@ -211,6 +212,24 @@ public class FreshFishingConfig {
             }
         }
 
+        leaderboardRarityWeights.clear();
+        leaderboardRarityWeights.put("default", 1.0);
+        leaderboardRarityWeights.put("rare", 1.5);
+        leaderboardRarityWeights.put("unique", 2.0);
+        leaderboardRarityWeights.put("legendary", 3.0);
+        leaderboardRarityWeights.put("mystery", 4.0);
+        ConfigurationSection weightsSection = config.getConfigurationSection("leaderboard.rarity-weights");
+        if (weightsSection != null) {
+            for (String rarityId : weightsSection.getKeys(false)) {
+                double weight = weightsSection.getDouble(rarityId, Double.NaN);
+                if (Double.isFinite(weight) && weight > 0) {
+                    leaderboardRarityWeights.put(rarityId.toLowerCase(Locale.ROOT), weight);
+                } else {
+                    plugin.getLogger().warning("Invalid leaderboard rarity weight for " + rarityId);
+                }
+            }
+        }
+
         trashPrices.clear();
         ConfigurationSection trashSec = config.getConfigurationSection("sale-shop.trash-prices");
         if (trashSec != null) {
@@ -319,6 +338,11 @@ public class FreshFishingConfig {
         double max = range.maxPrice();
         double fraction = Math.min(1.0, size / maxSize);
         return (min + (max - min) * fraction) * rarity.getMultiplier();
+    }
+
+    public double contestScore(FishRarity rarity, double size) {
+        double weight = leaderboardRarityWeights.getOrDefault(rarity.getId().toLowerCase(Locale.ROOT), 1.0);
+        return size * weight;
     }
 
     public record FishPriceRange(double minPrice, double maxPrice) {

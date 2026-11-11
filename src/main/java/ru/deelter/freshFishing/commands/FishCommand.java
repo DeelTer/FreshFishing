@@ -109,7 +109,7 @@ public class FishCommand implements CommandExecutor, TabCompleter {
 			sender.sendMessage(Component.text("#" + row.place() + " " + fish.playerName() + " · "
 					+ fish.sizeText() + " cm · ", NamedTextColor.GRAY)
 					.append(MiniMessage.miniMessage().deserialize(fish.rarityDisplay()))
-					.append(Component.text(" · " + fish.valueText(), NamedTextColor.YELLOW)));
+					.append(Component.text(" · " + fish.scoreText() + " pts", NamedTextColor.YELLOW)));
 		}
 	}
 

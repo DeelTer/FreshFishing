@@ -100,9 +100,10 @@ public class EntityFishListener implements Listener {
 			double size = FishUtil.getSize(fish);
 			if (rarity == null || !Double.isFinite(size) || size <= 0) return;
 			double value = config.fishValue(rarity, size);
-			if (!Double.isFinite(value)) return;
+			double score = config.contestScore(rarity, size);
+			if (!Double.isFinite(value) || !Double.isFinite(score)) return;
 			pendingRecords.put(event, new FishRecord(player.getUniqueId(), player.getName(), size,
-					rarity.getId(), MiniMessage.miniMessage().serialize(rarity.getName()), value, System.currentTimeMillis()));
+					rarity.getId(), MiniMessage.miniMessage().serialize(rarity.getName()), value, score, System.currentTimeMillis()));
 		}
 	}
 
