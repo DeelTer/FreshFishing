@@ -1,5 +1,6 @@
 package ru.deelter.freshFishing.hook;
 
+import net.kyori.adventure.text.Component;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
@@ -31,6 +32,17 @@ public final class ScreenEffects {
 		} catch (LinkageError ignored) {
 			// BetterEffects without a compatible API: no effects
 		}
+	}
+
+	public static void showOvertake(Player player, Component message) {
+		if (Bukkit.getPluginManager().isPluginEnabled(BETTER_EFFECTS)) {
+			try {
+				if (BetterEffectsHook.showOvertake(player, message)) return;
+			} catch (LinkageError ignored) {
+				// Fall back to the vanilla action bar on an incompatible API.
+			}
+		}
+		player.sendActionBar(message);
 	}
 
 	/** Plays a preset for every player within {@code radius}, weaker with distance. */

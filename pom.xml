@@ -6,7 +6,7 @@
 
     <groupId>ru.deelter.vr</groupId>
     <artifactId>FreshFishing</artifactId>
-    <version>3.1</version>
+    <version>3.2</version>
     <packaging>jar</packaging>
 
     <name>freshfishing</name>
@@ -78,6 +78,12 @@
     </repositories>
 
     <dependencies>
+        <dependency>
+            <groupId>io.github.miniplaceholders</groupId>
+            <artifactId>miniplaceholders-api</artifactId>
+            <version>3.2.0</version>
+            <scope>provided</scope>
+        </dependency>
         <dependency>
             <groupId>io.papermc.paper</groupId>
             <artifactId>paper-api</artifactId>

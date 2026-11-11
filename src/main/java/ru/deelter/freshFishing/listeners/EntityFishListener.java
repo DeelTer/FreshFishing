@@ -3,7 +3,7 @@ package ru.deelter.freshFishing.listeners;
 import io.papermc.paper.datacomponent.DataComponentType;
 import io.papermc.paper.datacomponent.DataComponentTypes;
 import io.papermc.paper.datacomponent.item.FoodProperties;
-import org.bukkit.damage.DamageType;
+import net.kyori.adventure.text.minimessage.MiniMessage;
 import org.bukkit.entity.*;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -23,10 +23,19 @@ import ru.deelter.freshFishing.config.FreshFishingConfig;
 import ru.deelter.freshFishing.data.FishRarity;
 import ru.deelter.freshFishing.data.FishSize;
 import ru.deelter.freshFishing.events.FishBossManager;
+import ru.deelter.freshFishing.stats.FishLeaderboard;
+import ru.deelter.freshFishing.stats.FishRecord;
 import ru.deelter.freshFishing.utils.FishUtil;
 import ru.deelter.freshFishing.utils.ProbabilityCollection;
 
+import java.util.IdentityHashMap;
+import java.util.Map;
+
 public class EntityFishListener implements Listener {
+
+	private final FreshFishingConfig config;
+	private final FishLeaderboard leaderboard;
+	private final Map<PlayerFishEvent, FishRecord> pendingRecords = new IdentityHashMap<>();
 
 	private final ProbabilityCollection<EntityType> possibleEntities;
 	private final double vectorMultiply, vectorX, vectorY, vectorZ;
@@ -37,7 +46,8 @@ public class EntityFishListener implements Listener {
 	private final EventsConfig eventsConfig;
 
 	public EntityFishListener(@NotNull FreshFishing plugin) {
-		FreshFishingConfig config = plugin.getConfigManager();
+		this.config = plugin.getConfigManager();
+		this.leaderboard = plugin.getLeaderboard();
 		this.possibleEntities = config.getEntityCollection();
 		this.vectorMultiply = config.getVectorMultiply();
 		this.vectorX = config.getVectorX();
@@ -85,6 +95,21 @@ public class EntityFishListener implements Listener {
 				.add(new Vector(vectorX, vectorY, vectorZ))
 				.multiply(vectorMultiply);
 		fishedEntity.setVelocity(velocity);
+		if (leaderboard != null && fishedEntity instanceof Fish fish && fish.isValid()) {
+			FishRarity rarity = FishUtil.getRarity(fish);
+			double size = FishUtil.getSize(fish);
+			if (rarity == null || !Double.isFinite(size) || size <= 0) return;
+			double value = config.fishValue(rarity, size);
+			if (!Double.isFinite(value)) return;
+			pendingRecords.put(event, new FishRecord(player.getUniqueId(), player.getName(), size,
+					rarity.getId(), MiniMessage.miniMessage().serialize(rarity.getName()), value, System.currentTimeMillis()));
+		}
+	}
+
+	@EventHandler(priority = EventPriority.MONITOR)
+	public void onCatchCompleted(PlayerFishEvent event) {
+		FishRecord record = pendingRecords.remove(event);
+		if (record != null && !event.isCancelled()) leaderboard.record(record);
 	}
 
 	/*

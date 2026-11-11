@@ -20,7 +20,6 @@ import org.jspecify.annotations.Nullable;
 import ru.deelter.freshFishing.FreshFishing;
 import ru.deelter.freshFishing.config.FreshFishingConfig;
 import ru.deelter.freshFishing.data.FishRarity;
-import ru.deelter.freshFishing.data.FishSize;
 import ru.deelter.freshFishing.shop.FishSaleMenu;
 import ru.deelter.freshFishing.utils.FishUtil;
 
@@ -220,25 +219,12 @@ public class FishSaleListener implements Listener {
 			if (attrs == null) return 0;
 
 			FishRarity rarity = attrs.getLeft();
-			double size = attrs.getRight();
-			double maxSize = FishSize.SIZES.stream().mapToDouble(FishSize::getMax).max().orElse(600);
-			double base = getPriceRangeForRarity(rarity, size, maxSize);
-			return base * rarity.getMultiplier();
+			return rarity == null ? 0 : config.fishValue(rarity, attrs.getRight());
 		} else {
 			double base = config.getTrashPrices().getOrDefault(item.getType(), 0.15);
 			double enchantBonus = calculateEnchantBonus(item);
 			return (base * item.getAmount()) + enchantBonus;
 		}
-	}
-
-	private double getPriceRangeForRarity(@NonNull FishRarity rarity, double size, double maxSize) {
-		var range = config.getFishPriceRanges().get(rarity.getId());
-		if (range == null) range = config.getFishPriceRanges().get("default");
-		if (range == null) return 8 + (450 - 8) * (size / maxSize);
-		double min = range.minPrice();
-		double max = range.maxPrice();
-		double fraction = Math.min(1.0, size / maxSize);
-		return min + (max - min) * fraction;
 	}
 
 	private double calculateEnchantBonus(@NonNull ItemStack item) {

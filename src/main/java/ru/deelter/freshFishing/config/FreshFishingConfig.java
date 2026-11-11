@@ -310,6 +310,17 @@ public class FreshFishingConfig {
         return fallback;
     }
 
+    public double fishValue(FishRarity rarity, double size) {
+        double maxSize = FishSize.SIZES.stream().mapToDouble(FishSize::getMax).max().orElse(600);
+        var range = fishPriceRanges.get(rarity.getId());
+        if (range == null) range = fishPriceRanges.get("default");
+        if (range == null) return (8 + (450 - 8) * (size / maxSize)) * rarity.getMultiplier();
+        double min = range.minPrice();
+        double max = range.maxPrice();
+        double fraction = Math.min(1.0, size / maxSize);
+        return (min + (max - min) * fraction) * rarity.getMultiplier();
+    }
+
     public record FishPriceRange(double minPrice, double maxPrice) {
     }
 }

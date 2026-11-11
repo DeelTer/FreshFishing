@@ -1,5 +1,5 @@
 name: FreshFishing
-version: '3.1'
+version: '${project.version}'
 main: ru.deelter.freshFishing.FreshFishing
 api-version: '1.21'
 authors: [ DeelTer ]
@@ -11,11 +11,12 @@ softdepend:
   - BetterEmotes
   # Screen effects: speed lines on grapple, screen shake from boss fish.
   - BetterEffects
+  - MiniPlaceholders
 
 commands:
   fish:
-    description: Open fish sale menu or reload config
-    usage: /fish menu [player] | /fish reload
+    description: Open fish sale menu, view catch records or reload config
+    usage: /fish menu [player] | /fish top [5|10|15|reset] | /fish reload
   sandmarker:
     description: Manage sand loot markers
     usage: /sandmarker <create|list|remove>
@@ -23,5 +24,5 @@ commands:
 
 permissions:
   freshfishing.admin:
-    description: Allows managing sand loot markers
+    description: Allows managing sand loot markers, reloading config and resetting the fishing leaderboard
     default: op

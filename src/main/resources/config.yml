@@ -11,6 +11,18 @@ item: 0
 # Fish durability
 fish-consume-damage: 20
 
+# Stores each player's best catch. Storage changes take effect on restart.
+leaderboard:
+  storage:
+    type: sqlite
+    mysql:
+      host: localhost
+      port: 3306
+      database: minecraft
+      user: minecraft
+      password: ""
+      ssl-mode: PREFERRED
+
 # ==============================================
 # ITEM LORE FOR FISH
 # ==============================================

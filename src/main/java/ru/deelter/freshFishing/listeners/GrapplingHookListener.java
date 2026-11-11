@@ -21,6 +21,7 @@ import org.bukkit.util.Vector;
 import org.jetbrains.annotations.Nullable;
 import org.jspecify.annotations.NonNull;
 import ru.deelter.freshFishing.FreshFishing;
+import ru.deelter.freshFishing.api.event.GrapplingHookUseEvent;
 import ru.deelter.freshFishing.config.FreshFishingConfig;
 import ru.deelter.freshFishing.hook.ScreenEffects;
 import ru.deelter.freshFishing.utils.PhysicsUtils;
@@ -92,6 +93,7 @@ public class GrapplingHookListener implements Listener {
 		if (anchor == Anchor.NONE) return;
 
 		Player player = event.getPlayer();
+		if (!new GrapplingHookUseEvent(player, hook).callEvent()) return;
 		pullEntity(player, hook.getLocation(), pullStrength);
 		playEffects(player.getLocation(), hook.getLocation());
 		ScreenEffects.playPreset(player, screenEffect);
@@ -190,6 +192,7 @@ public class GrapplingHookListener implements Listener {
 		Entity hooked = event.getHook().getHookedEntity();
 		if (hooked == null) return;
 		Player player = event.getPlayer();
+		if (!new GrapplingHookUseEvent(player, event.getHook()).callEvent()) return;
 
 		Location hookedRef = hooked instanceof LivingEntity le ? le.getEyeLocation() : hooked.getLocation();
 		boolean entityHigher = hookedRef.getY() > player.getEyeLocation().getY() + yOffsetCheck;

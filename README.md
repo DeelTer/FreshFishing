@@ -43,6 +43,40 @@
 
 ## 📋 Commands & Permissions
 
+### Fishing contest
+
+- `/fish top [5|10|15]` shows the best catch per player. The default is 10.
+- `/fish top reset` clears the contest for everyone and requires `freshfishing.admin`.
+
+The ranking uses the fish shop's configured valuation at the time of the catch, including
+rarity and the size after bait. With the default configuration, a 100 cm Default fish
+scores 11.67 and a 50 cm Legendary fish scores 178.33. The earlier record wins ties.
+FreshFishing starts tracking new catches when this version is installed.
+
+By default records are stored in `plugins/FreshFishing/fishing-leaderboard.db`.
+To use MySQL 8.0.19 or newer, set `leaderboard.storage.type: mysql`, fill in
+`leaderboard.storage.mysql`, and restart. The configured database must already exist.
+Commands and holograms read the same in-memory ranking, updated after successful writes.
+Servers sharing MySQL pick up other servers' changes on the next refresh (every 15 seconds).
+With BetterEffects installed, passing another player to take a top-five place plays a
+typewriter action bar and a short flash. The flash uses the BetterEffects resource pack.
+
+With MiniPlaceholders, use a line like this for each position in a hologram:
+
+```text
+<freshfishing_top:1:line>
+```
+
+Change the place number on each line. For custom formatting, the individual fields are
+`player`, `cm`, `rarity`, `value`, and `place`. For a viewer's own record use
+`<freshfishing_place>`, `<freshfishing_cm>`, and `<freshfishing_rarity>` in
+a hologram that supports audience placeholders. Empty positions resolve to empty text.
+
+Plugins can listen for
+`ru.deelter.freshFishing.api.event.GrapplingHookUseEvent` and call
+`event.setCancelled(true)` to stop the FreshFishing grapple for that use. The
+event exposes the player and the bobber and leaves vanilla rod behavior in place.
+
 | Command | Permission | Description |
 |---------|-----------|-------------|
 | `/fish menu [player]` | None | Open fish sale GUI |

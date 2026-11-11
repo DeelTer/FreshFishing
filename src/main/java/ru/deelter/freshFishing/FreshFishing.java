@@ -9,6 +9,8 @@ import ru.deelter.freshFishing.config.EventsConfig;
 import ru.deelter.freshFishing.config.FreshFishingConfig;
 import ru.deelter.freshFishing.events.FishBossManager;
 import ru.deelter.freshFishing.listeners.*;
+import ru.deelter.freshFishing.hook.FishPlaceholders;
+import ru.deelter.freshFishing.stats.FishLeaderboard;
 import ru.deelter.freshFishing.sandloot.SandLootManager;
 
 @Getter
@@ -20,6 +22,8 @@ public final class FreshFishing extends JavaPlugin {
 	private FreshFishingConfig configManager;
 	private EventsConfig eventsConfig;
 	private FishBossManager fishBossManager;
+	private FishLeaderboard leaderboard;
+	private Runnable unregisterPlaceholders = () -> {};
 
 	@Override
 	public void onLoad() {
@@ -33,6 +37,19 @@ public final class FreshFishing extends JavaPlugin {
 		this.configManager = new FreshFishingConfig(this);
 		this.eventsConfig = new EventsConfig(this);
 		this.fishBossManager = new FishBossManager(this);
+
+		try {
+			leaderboard = new FishLeaderboard(this);
+		} catch (IllegalArgumentException e) {
+			getLogger().warning(e.getMessage());
+		}
+		if (leaderboard != null && getServer().getPluginManager().isPluginEnabled("MiniPlaceholders")) {
+			try {
+				unregisterPlaceholders = FishPlaceholders.register(leaderboard);
+			} catch (LinkageError e) {
+				getLogger().warning("Incompatible MiniPlaceholders API: " + e.getMessage());
+			}
+		}
 
 		new FishMetrics(this, 31328);
 		new UniqueFishParamsListener(this);
@@ -55,6 +72,8 @@ public final class FreshFishing extends JavaPlugin {
 
 	@Override
 	public void onDisable() {
+		unregisterPlaceholders.run();
+		if (leaderboard != null) leaderboard.close();
 		if (SandLootManager.get() != null) SandLootManager.get().shutdown();
 		if (fishBossManager != null) fishBossManager.shutdown();
 	}
