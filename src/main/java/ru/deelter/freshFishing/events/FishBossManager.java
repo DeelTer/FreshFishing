@@ -297,6 +297,13 @@ public class FishBossManager implements Listener {
 			loc.getWorld().dropItemNaturally(loc, item);
 		}
 
+		// Gold
+		int gold = config.getGoldMin() + (config.getGoldMax() > config.getGoldMin()
+				? RANDOM.nextInt(config.getGoldMax() - config.getGoldMin() + 1) : 0);
+		if (gold > 0) {
+			loc.getWorld().dropItemNaturally(loc, new ItemStack(config.getGoldMaterial(), gold));
+		}
+
 		// XP to killer
 		Player killer = event.getEntity().getKiller();
 		if (killer != null) {

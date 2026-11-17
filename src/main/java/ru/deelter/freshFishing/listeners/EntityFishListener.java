@@ -4,6 +4,8 @@ import io.papermc.paper.datacomponent.DataComponentType;
 import io.papermc.paper.datacomponent.DataComponentTypes;
 import io.papermc.paper.datacomponent.item.FoodProperties;
 import net.kyori.adventure.text.minimessage.MiniMessage;
+import org.bukkit.Bukkit;
+import org.bukkit.Material;
 import org.bukkit.entity.*;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -18,6 +20,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.util.Vector;
 import org.jetbrains.annotations.NotNull;
 import ru.deelter.freshFishing.FreshFishing;
+import ru.deelter.freshFishing.api.event.FishCaughtEvent;
 import ru.deelter.freshFishing.config.EventsConfig;
 import ru.deelter.freshFishing.config.FreshFishingConfig;
 import ru.deelter.freshFishing.data.FishRarity;
@@ -42,6 +45,8 @@ public class EntityFishListener implements Listener {
 	private final int fishConsumeDamage;
 	private final double baitSizeBonusPerNutrition;
 	private final boolean consumeBaitOnCatch;
+	private final boolean hookToCatch;
+	private final FreshFishing plugin;
 	private final FishBossManager bossManager;
 	private final EventsConfig eventsConfig;
 
@@ -56,6 +61,8 @@ public class EntityFishListener implements Listener {
 		this.fishConsumeDamage = config.getFishConsumeDamage();
 		this.baitSizeBonusPerNutrition = config.getBaitSizeBonusPerNutrition();
 		this.consumeBaitOnCatch = config.isConsumeBaitOnCatch();
+		this.hookToCatch = config.isHookToCatch();
+		this.plugin = plugin;
 		this.bossManager = plugin.getFishBossManager();
 		this.eventsConfig = plugin.getEventsConfig();
 		plugin.getServer().getPluginManager().registerEvents(this, plugin);
@@ -78,6 +85,7 @@ public class EntityFishListener implements Listener {
 
 		if (fishedEntity instanceof Fish fish) {
 			applyBait(player, fish);
+			callCaughtEvent(player, fish);
 		}
 
 		if (fishedEntity instanceof LivingEntity living) {
@@ -95,6 +103,7 @@ public class EntityFishListener implements Listener {
 				.add(new Vector(vectorX, vectorY, vectorZ))
 				.multiply(vectorMultiply);
 		fishedEntity.setVelocity(velocity);
+		if (hookToCatch) hookToCatch(player, fishedEntity);
 		if (leaderboard != null && fishedEntity instanceof Fish fish && fish.isValid()) {
 			FishRarity rarity = FishUtil.getRarity(fish);
 			double size = FishUtil.getSize(fish);
@@ -136,6 +145,36 @@ public class EntityFishListener implements Listener {
 		if (consumeBaitOnCatch) {
 			bait.subtract();
 		}
+	}
+
+	/**
+	 * Keeps the player's line on the catch: vanilla removes the hook right after this event, so a new
+	 * hook is cast next tick and attached to the caught entity. Reeling in then pulls it like a hooked mob.
+	 */
+	private void hookToCatch(@NotNull Player player, @NotNull Entity caught) {
+		Bukkit.getScheduler().runTask(plugin, () -> {
+			if (!player.isOnline() || !caught.isValid() || caught.isDead()) return;
+			if (player.getFishHook() != null) return;
+			if (player.getInventory().getItemInMainHand().getType() != Material.FISHING_ROD
+					&& player.getInventory().getItemInOffHand().getType() != Material.FISHING_ROD) return;
+			FishHook hook = player.launchProjectile(FishHook.class);
+			hook.teleport(caught.getLocation());
+			hook.setHookedEntity(caught);
+		});
+	}
+
+	/** Lets other plugins change the size of a freshly caught fish. */
+	private void callCaughtEvent(@NotNull Player player, @NotNull Fish fish) {
+		FishRarity rarity = FishUtil.getRarity(fish);
+		if (rarity == null) return;
+		double size = FishUtil.getSize(fish);
+		FishCaughtEvent caughtEvent = new FishCaughtEvent(player, fish, rarity, size);
+		caughtEvent.callEvent();
+		if (caughtEvent.getSize() == size || !Double.isFinite(caughtEvent.getSize()) || caughtEvent.getSize() <= 0) return;
+
+		double maxSize = FishSize.SIZES.stream().mapToDouble(FishSize::getMax).max().orElse(Double.MAX_VALUE);
+		double newSize = Math.round(Math.min(caughtEvent.getSize(), maxSize) * 100.0) / 100.0;
+		FishUtil.editFish(fish, newSize, rarity);
 	}
 
 	/*

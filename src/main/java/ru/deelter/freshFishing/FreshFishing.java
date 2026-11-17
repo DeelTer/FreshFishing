@@ -9,6 +9,7 @@ import ru.deelter.freshFishing.config.EventsConfig;
 import ru.deelter.freshFishing.config.FreshFishingConfig;
 import ru.deelter.freshFishing.events.FishBossManager;
 import ru.deelter.freshFishing.listeners.*;
+import ru.deelter.freshFishing.lostitems.LostItemsManager;
 import ru.deelter.freshFishing.hook.FishPlaceholders;
 import ru.deelter.freshFishing.stats.FishLeaderboard;
 import ru.deelter.freshFishing.sandloot.SandLootManager;
@@ -22,6 +23,7 @@ public final class FreshFishing extends JavaPlugin {
 	private FreshFishingConfig configManager;
 	private EventsConfig eventsConfig;
 	private FishBossManager fishBossManager;
+	private LostItemsManager lostItemsManager;
 	private FishLeaderboard leaderboard;
 	private Runnable unregisterPlaceholders = () -> {};
 
@@ -58,6 +60,13 @@ public final class FreshFishing extends JavaPlugin {
 		new GrapplingHookListener(this);
 		new FishSaleListener(this);
 		new SandLootManager(this);
+		if (configManager.isLostItemsEnabled()) {
+			try {
+				lostItemsManager = new LostItemsManager(this);
+			} catch (java.sql.SQLException e) {
+				getLogger().warning("Lost items disabled, database error: " + e.getMessage());
+			}
+		}
 		// Soft: registers fishing emote triggers only when BetterEmotes is installed.
 		EmoteTriggerListener.register(this);
 
@@ -76,5 +85,6 @@ public final class FreshFishing extends JavaPlugin {
 		if (leaderboard != null) leaderboard.close();
 		if (SandLootManager.get() != null) SandLootManager.get().shutdown();
 		if (fishBossManager != null) fishBossManager.shutdown();
+		if (lostItemsManager != null) lostItemsManager.close();
 	}
 }

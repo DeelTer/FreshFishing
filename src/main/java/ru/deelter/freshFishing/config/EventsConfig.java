@@ -43,6 +43,9 @@ public class EventsConfig {
     private List<String> rewardRarities;
     private List<String> rewardSizeTiers;
     private int bonusXpLevels;
+    private Material goldMaterial;
+    private int goldMin;
+    private int goldMax;
     private int secondaryLootMin;
     private int secondaryLootMax;
     private List<Material> secondaryLootMaterials;
@@ -87,6 +90,10 @@ public class EventsConfig {
         rewardRarities = cfg.getStringList("boss-fish.reward.drop-rarities");
         rewardSizeTiers = cfg.getStringList("boss-fish.reward.drop-size-tiers");
         bonusXpLevels = cfg.getInt("boss-fish.reward.bonus-xp-levels", 5);
+        goldMaterial = Material.matchMaterial(cfg.getString("boss-fish.reward.gold.material", "GOLD_INGOT"));
+        if (goldMaterial == null || !goldMaterial.isItem()) goldMaterial = Material.GOLD_INGOT;
+        goldMin = cfg.getInt("boss-fish.reward.gold.count-min", 2);
+        goldMax = cfg.getInt("boss-fish.reward.gold.count-max", 6);
         secondaryLootMin = cfg.getInt("boss-fish.reward.secondary-loot.count-min", 1);
         secondaryLootMax = cfg.getInt("boss-fish.reward.secondary-loot.count-max", 3);
         secondaryLootMaterials = new ArrayList<>();

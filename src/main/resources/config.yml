@@ -835,6 +835,24 @@ bait:
   # If false, the bait gives its bonus but is not consumed
   consume-on-catch: true
 
+# After a catch the player's hook stays attached to the caught entity (fish or mob),
+# so reeling in again pulls it like a hooked mob. The player must still hold a fishing rod.
+hook-to-catch: true
+
+# ==============================================
+# LOST ITEMS
+# ==============================================
+# Valuable items that despawn in water are saved to a local SQLite database (lost-items.db)
+# and can be fished up by another player instead of a normal non-fish catch.
+# Saved: items with a sale price (fish or trash-prices), enchanted items, items with a
+# custom name, item name or lore.
+lost-items:
+  enabled: true
+  # Chance that a non-fish catch is replaced by a lost item (0.05 = 5%)
+  catch-chance: 0.05
+  # Oldest items are removed above this count
+  max-stored: 1000
+
 # ==============================================
 # GRAPPLING HOOK
 # ==============================================

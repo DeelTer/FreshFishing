@@ -58,6 +58,10 @@ public class FreshFishingConfig {
 
     private double baitSizeBonusPerNutrition;
     private boolean consumeBaitOnCatch;
+    private boolean hookToCatch;
+    private boolean lostItemsEnabled;
+    private double lostItemsCatchChance;
+    private int lostItemsMaxStored;
 
     private boolean grapplingHookEnabled;
     private boolean grapplingHookWallGrapple;
@@ -256,6 +260,10 @@ public class FreshFishingConfig {
         // === BAIT ===
         baitSizeBonusPerNutrition = config.getDouble("bait.size-bonus-per-nutrition", 2.0);
         consumeBaitOnCatch = config.getBoolean("bait.consume-on-catch", true);
+        hookToCatch = config.getBoolean("hook-to-catch", true);
+        lostItemsEnabled = config.getBoolean("lost-items.enabled", true);
+        lostItemsCatchChance = config.getDouble("lost-items.catch-chance", 0.05);
+        lostItemsMaxStored = config.getInt("lost-items.max-stored", 1000);
 
         // === GRAPPLING HOOK ===
         grapplingHookEnabled = config.getBoolean("grappling-hook.enabled", true);

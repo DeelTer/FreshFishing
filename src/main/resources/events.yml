@@ -51,6 +51,11 @@ boss-fish:
       - tier5
     # XP levels given to the killer
     bonus-xp-levels: 5
+    # Gold dropped by the boss: a random amount between count-min and count-max (count-max 0 = none)
+    gold:
+      material: GOLD_INGOT
+      count-min: 2
+      count-max: 6
     # Secondary coral/ocean loot: random items alongside the fish
     secondary-loot:
       count-min: 1
