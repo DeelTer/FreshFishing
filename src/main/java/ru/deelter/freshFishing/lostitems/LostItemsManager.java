@@ -83,6 +83,8 @@ public class LostItemsManager implements Listener {
 		if (event.getState() != PlayerFishEvent.State.CAUGHT_FISH) return;
 		if (!(event.getCaught() instanceof Item caught)) return;
 		if (FishUtil.isFish(caught.getItemStack())) return;
+		// Another plugin already replaced this catch (a vanilla catch has no entity data)
+		if (!caught.getPersistentDataContainer().isEmpty()) return;
 		if (ThreadLocalRandom.current().nextDouble() >= config.getLostItemsCatchChance()) return;
 		ItemStack lost = takeRandom();
 		if (lost != null) caught.setItemStack(lost);
@@ -118,7 +120,8 @@ public class LostItemsManager implements Listener {
 		}
 	}
 
-	private @Nullable ItemStack takeRandom() {
+	/** Removes and returns a random lost item, or null when there is none. */
+	public @Nullable ItemStack takeRandom() {
 		synchronized (lock) {
 			if (connection == null) return null;
 			try (Statement select = connection.createStatement();

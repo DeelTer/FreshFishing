@@ -59,8 +59,12 @@ public class FreshFishingConfig {
     private double baitSizeBonusPerNutrition;
     private boolean consumeBaitOnCatch;
     private boolean hookToCatch;
+    private double fishHealthPerCm;
+    private boolean logPriceScale;
+    private double fishHealthMax;
     private boolean lostItemsEnabled;
     private double lostItemsCatchChance;
+    private double lostItemsBuryChance;
     private int lostItemsMaxStored;
 
     private boolean grapplingHookEnabled;
@@ -260,9 +264,13 @@ public class FreshFishingConfig {
         // === BAIT ===
         baitSizeBonusPerNutrition = config.getDouble("bait.size-bonus-per-nutrition", 2.0);
         consumeBaitOnCatch = config.getBoolean("bait.consume-on-catch", true);
-        hookToCatch = config.getBoolean("hook-to-catch", true);
+        hookToCatch = config.getBoolean("hook-to-catch", false);
+        logPriceScale = !"LINEAR".equalsIgnoreCase(config.getString("sale-shop.price-scale", "LOG"));
+        fishHealthPerCm = Math.max(0, config.getDouble("fish-health.per-cm", 0.1));
+        fishHealthMax = config.getDouble("fish-health.max", 200.0);
         lostItemsEnabled = config.getBoolean("lost-items.enabled", true);
         lostItemsCatchChance = config.getDouble("lost-items.catch-chance", 0.05);
+        lostItemsBuryChance = config.getDouble("lost-items.bury-chance", 0.25);
         lostItemsMaxStored = config.getInt("lost-items.max-stored", 1000);
 
         // === GRAPPLING HOOK ===
@@ -344,7 +352,17 @@ public class FreshFishingConfig {
         if (range == null) return (8 + (450 - 8) * (size / maxSize)) * rarity.getMultiplier();
         double min = range.minPrice();
         double max = range.maxPrice();
-        double fraction = Math.min(1.0, size / maxSize);
+        double fraction;
+        if (logPriceScale) {
+            // Logarithmic: with sizes from a few cm to thousands, a linear share leaves almost every
+            // fish at the minimum price; on a log scale doubling the size always adds the same amount.
+            double minSize = FishSize.SIZES.stream().mapToDouble(FishSize::getMin).min().orElse(1);
+            double low = Math.max(0.1, minSize);
+            fraction = size <= low ? 0 : Math.log(size / low) / Math.log(maxSize / low);
+        } else {
+            fraction = size / maxSize;
+        }
+        fraction = Math.clamp(fraction, 0.0, 1.0);
         return (min + (max - min) * fraction) * rarity.getMultiplier();
     }
 

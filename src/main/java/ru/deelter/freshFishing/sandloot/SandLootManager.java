@@ -80,12 +80,24 @@ public class SandLootManager {
 
 					for (int i = 0; i < itemsToSpawn && !candidates.isEmpty(); i++) {
 						Block target = candidates.remove(new Random().nextInt(candidates.size()));
-						ItemStack loot = lootPool.get(new Random().nextInt(lootPool.size())).clone();
+						ItemStack loot = buriedLostItem();
+						if (loot == null) loot = lootPool.get(new Random().nextInt(lootPool.size())).clone();
 						setBrushableItem(target, loot);
 					}
 				}
 			}
 		}, intervalTicks, intervalTicks).getTaskId();
+	}
+
+	/**
+	 * Sometimes a lost item (despawned in water, see LostItemsManager) gets buried here instead of
+	 * the usual loot: the sea washes it up on the beach.
+	 */
+	private @org.jspecify.annotations.Nullable ItemStack buriedLostItem() {
+		var lostItems = plugin.getLostItemsManager();
+		if (lostItems == null) return null;
+		if (new Random().nextDouble() >= plugin.getConfigManager().getLostItemsBuryChance()) return null;
+		return lostItems.takeRandom();
 	}
 
 	private @NonNull List<Block> findNearbyBlocks(Block center) {

@@ -139,7 +139,10 @@ public class FishUtil {
 				.orElseThrow(() -> new RuntimeException("No FishSize defined"));
 
 		double scale = (MIN_SCALE + (MAX_SCALE - MIN_SCALE) * (size - tierMin) / (tierMax - tierMin)) * rarity.getMultiplier();
-		double health = scale;
+		// Health follows the real size (not the visual scale, which is squeezed into 0.5..15):
+		// a 300 cm fish has 30 HP at 0.1 per cm, capped by fish-health.max
+		var config = FreshFishing.getInstance().getConfigManager();
+		double health = Math.clamp(size * config.getFishHealthPerCm() * rarity.getMultiplier(), 1.0, Math.max(1.0, config.getFishHealthMax()));
 
 		AttributeUtils.applyFishAttributes(fish, scale, health);
 	}

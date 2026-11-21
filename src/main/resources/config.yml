@@ -177,6 +177,10 @@ sale-shop:
   # Slot position for the "Sell" button (0-based index)
   sale-button-slot: 22
   sale-sound: "custom.coins.drop.multiply"
+  # How size maps onto the price range below:
+  #   LOG    - logarithmic: every doubling of size adds the same amount (recommended with big size tiers)
+  #   LINEAR - price grows in proportion to size / largest size
+  price-scale: LOG
   # Price ranges for fish by rarity
   # If a rarity is not listed, uses default values
   # Price = min-price + (max-price - min-price) * (size / max-possible-size)
@@ -837,7 +841,14 @@ bait:
 
 # After a catch the player's hook stays attached to the caught entity (fish or mob),
 # so reeling in again pulls it like a hooked mob. The player must still hold a fishing rod.
-hook-to-catch: true
+hook-to-catch: false
+
+# Health of fish entities, from their size (times the rarity multiplier):
+# health = size in cm * per-cm, never below the vanilla health and never above max.
+# 0.1: a 50 cm fish has 5 HP, a 300 cm fish 30 HP, a 2000 cm fish 200 HP.
+fish-health:
+  per-cm: 0.1
+  max: 200.0
 
 # ==============================================
 # LOST ITEMS
@@ -850,6 +861,8 @@ lost-items:
   enabled: true
   # Chance that a non-fish catch is replaced by a lost item (0.05 = 5%)
   catch-chance: 0.05
+  # Chance that a suspicious sand/gravel refill (sand-loot) buries a lost item instead of normal loot
+  bury-chance: 0.25
   # Oldest items are removed above this count
   max-stored: 1000
 

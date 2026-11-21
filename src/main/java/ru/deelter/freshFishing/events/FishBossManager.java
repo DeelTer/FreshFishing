@@ -34,6 +34,7 @@ import java.util.stream.Collectors;
 public class FishBossManager implements Listener {
 
 	private static final Random RANDOM = new Random();
+	public static final NamespacedKey BOSS_KEY = new NamespacedKey("freshfishing", "boss");
 	// Approximate Minecraft gravity per tick (blocks/tick²)
 	private static final double GRAVITY = 0.08;
 
@@ -85,6 +86,9 @@ public class FishBossManager implements Listener {
 		double hp = config.getBossFishHealthMin()
 				+ RANDOM.nextDouble() * (config.getBossFishHealthMax() - config.getBossFishHealthMin());
 		setMaxHealth(entity, hp);
+
+		// Lets other plugins tell a boss from a big fish: freshfishing:boss
+		entity.getPersistentDataContainer().set(BOSS_KEY, org.bukkit.persistence.PersistentDataType.BOOLEAN, true);
 
 		BossBar bar = Bukkit.createBossBar(randomName(), config.getBossbarColor(), config.getBossbarStyle());
 		bar.setProgress(1.0);
